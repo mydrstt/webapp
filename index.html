@@ -2,578 +2,907 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>학교 생활 기록실 — 급식 · 시간표 · 학사일정</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-
 :root{
-  --bg:#f3f7ff;--ink:#172033;--muted:#758096;--glass:rgba(255,255,255,.56);--glass-strong:rgba(255,255,255,.76);
-  --line:rgba(255,255,255,.72);--blue:#3d8bfd;--cyan:#49c9f5;--violet:#9a7cff;--pink:#ff7bbd;--yellow:#ffd66b;
-  --shadow:0 24px 70px rgba(72,96,150,.16);--soft-shadow:0 10px 32px rgba(72,96,150,.10);
+  --bg:#eef4ff;
+  --ink:#182235;
+  --muted:#77839a;
+  --muted2:#96a1b2;
+  --glass:rgba(255,255,255,.58);
+  --glass-strong:rgba(255,255,255,.82);
+  --line:rgba(255,255,255,.82);
+  --blue:#4b86ff;
+  --blue2:#73b8ff;
+  --violet:#9277ff;
+  --pink:#f48dc5;
+  --cyan:#65d4ff;
+  --green:#6ed1ab;
+  --yellow:#ffd77b;
+  --shadow:0 26px 70px rgba(75,104,158,.16);
+  --soft-shadow:0 10px 28px rgba(74,96,145,.10);
+  --radius:28px;
 }
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Pretendard",system-ui,sans-serif;color:var(--ink);background:#eef4ff;letter-spacing:-.025em;-webkit-font-smoothing:antialiased}
-button,input,select{font:inherit}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Pretendard",system-ui,sans-serif;
+  color:var(--ink);background:#eef4ff;letter-spacing:-.025em;-webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit}
 button{cursor:pointer;border:0}
-::selection{background:rgba(61,139,253,.18)}
+::selection{background:rgba(75,134,255,.18)}
 .hidden{display:none!important}
 
-/* Background — kept intentionally close to the current Liquid Glass look */
-.app-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:linear-gradient(145deg,#f9fbff 0%,#eef5ff 42%,#f8f0ff 100%)}
+.app-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:linear-gradient(145deg,#fafcff 0%,#eef5ff 42%,#f8f0ff 100%)}
 .orb{position:absolute;border-radius:999px;filter:blur(2px);opacity:.72;animation:float 12s ease-in-out infinite}
-.orb.a{width:420px;height:420px;left:-120px;top:-160px;background:radial-gradient(circle at 35% 35%,#b8e8ff,rgba(120,178,255,.22) 55%,transparent 72%)}
-.orb.b{width:460px;height:460px;right:-140px;top:100px;background:radial-gradient(circle at 40% 40%,#e6c5ff,rgba(191,151,255,.18) 58%,transparent 74%);animation-delay:-4s}
-.orb.c{width:360px;height:360px;left:34%;bottom:-190px;background:radial-gradient(circle at 45% 35%,#ffe3a8,rgba(255,205,121,.14) 60%,transparent 74%);animation-delay:-7s}
-.noise{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E")}
-.pointer-glow{position:fixed;z-index:2;width:260px;height:260px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(125,180,255,.18),transparent 68%);transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:left .12s ease-out,top .12s ease-out}
+.orb.a{width:420px;height:420px;left:-120px;top:-160px;background:radial-gradient(circle at 35% 35%,#b7e8ff,rgba(120,178,255,.22) 55%,transparent 72%)}
+.orb.b{width:480px;height:480px;right:-170px;top:60px;background:radial-gradient(circle at 40% 40%,#e7c7ff,rgba(191,151,255,.18) 58%,transparent 74%);animation-delay:-4s}
+.orb.c{width:390px;height:390px;left:34%;bottom:-190px;background:radial-gradient(circle at 45% 35%,#ffe0a6,rgba(255,205,121,.14) 60%,transparent 74%);animation-delay:-7s}
+.noise{position:absolute;inset:0;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E")}
+.pointer-glow{position:fixed;z-index:2;width:260px;height:260px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(125,180,255,.16),transparent 68%);transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:left .12s ease-out,top .12s ease-out}
 
-/* Liquid Glass */
-.glass{background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(255,255,255,.42));border:1px solid rgba(255,255,255,.78);box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.85);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%)}
-.topbar{position:fixed;z-index:50;top:14px;left:50%;transform:translateX(-50%);width:min(1180px,calc(100% - 28px));height:62px;border-radius:22px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.82);box-shadow:0 12px 42px rgba(69,91,139,.12),inset 0 1px rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%)}
-.topbar-inner{height:100%;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(255,255,255,.42));border:1px solid rgba(255,255,255,.8);box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.85);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%)}
+
+/* App shell */
+.app-shell{position:relative;z-index:4;width:min(1240px,calc(100% - 30px));height:100dvh;margin:0 auto;display:flex;flex-direction:column;padding:14px 0 14px}
+.topbar{height:62px;flex:0 0 auto;border-radius:22px;background:rgba(255,255,255,.53);border:1px solid rgba(255,255,255,.84);box-shadow:0 12px 42px rgba(69,91,139,.12),inset 0 1px rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%)}
+.topbar-inner{height:100%;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}.brand-mark{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:white;font-size:18px;background:linear-gradient(145deg,#77baff,#6b83ff 55%,#a779ff);box-shadow:0 7px 18px rgba(93,137,244,.28),inset 0 1px rgba(255,255,255,.55)}
-.brand-copy{min-width:0}.brand-title{font-size:15px;font-weight:800;line-height:1}.brand-sub{font-size:10px;color:#8490a4;margin-top:5px;white-space:nowrap}.top-actions{display:flex;gap:7px}
-.icon-btn,.small-btn,.nav-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(255,255,255,.82);background:rgba(255,255,255,.55);color:#516079;border-radius:14px;box-shadow:0 5px 16px rgba(67,88,130,.08),inset 0 1px rgba(255,255,255,.9);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,background .22s}
-.icon-btn{width:40px;height:40px}.small-btn{padding:10px 13px;font-size:11px;font-weight:750}.icon-btn:hover,.small-btn:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.015);background:rgba(255,255,255,.82);box-shadow:0 10px 24px rgba(67,88,130,.13),inset 0 1px white}.icon-btn:active,.small-btn:active{transform:scale(.96)}
+.brand-title{font-size:15px;font-weight:850;line-height:1}.brand-sub{font-size:10px;color:#8792a5;margin-top:5px;white-space:nowrap}
+.top-actions{display:flex;gap:7px}.icon-btn,.small-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(255,255,255,.82);background:rgba(255,255,255,.54);color:#516079;border-radius:14px;box-shadow:0 5px 16px rgba(67,88,130,.08),inset 0 1px rgba(255,255,255,.9);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,background .22s}.icon-btn{width:40px;height:40px}.small-btn{padding:10px 13px;font-size:11px;font-weight:800}.icon-btn:hover,.small-btn:hover{transform:translateY(-2px) scale(1.015);background:rgba(255,255,255,.82);box-shadow:0 10px 24px rgba(67,88,130,.13),inset 0 1px white}.icon-btn:active,.small-btn:active{transform:scale(.96)}
 
-/* App viewport: the page itself never scrolls; only this custom scroll view does. */
-.page{position:relative;z-index:5;width:min(1180px,calc(100% - 28px));height:100dvh;margin:0 auto;padding:92px 0 10px;overflow:hidden}
-.main-scroll{height:calc(100dvh - 102px);overflow-y:auto;overflow-x:hidden;padding:3px 4px 72px;scroll-behavior:smooth;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none}
+.ai-bar-wrap{flex:0 0 auto;padding:12px 0 10px;display:flex;justify-content:center}
+.ai-top-button{width:min(960px,100%);min-height:72px;padding:0 22px;border-radius:23px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#28334a;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(246,238,255,.62));border:1px solid rgba(255,255,255,.88);box-shadow:0 12px 30px rgba(98,84,170,.09),inset 0 1px white;backdrop-filter:blur(24px) saturate(155%);-webkit-backdrop-filter:blur(24px) saturate(155%);transition:transform .22s,box-shadow .22s}
+.ai-top-button:hover{transform:translateY(-2px);box-shadow:0 18px 34px rgba(98,84,170,.13),inset 0 1px white}
+.ai-top-left{display:flex;align-items:center;gap:10px;min-width:0}.ai-top-mark{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:white;background:linear-gradient(145deg,#76b8ff,#7582ff 58%,#9d7aff);box-shadow:0 8px 18px rgba(92,117,236,.2);flex:0 0 auto}.ai-top-copy{text-align:left;min-width:0}.ai-top-label{font-size:14px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ai-top-sub{font-size:10px;color:#8f99aa;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ai-top-arrow{font-size:20px;color:#7884a0;flex:0 0 auto}
+
+/* Main content is a custom app scroll view */
+.content{min-height:0;flex:1 1 auto;position:relative}
+.main-scroll{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none;padding:2px 4px calc(118px + env(safe-area-inset-bottom));scroll-behavior:smooth;overscroll-behavior:contain}
 .main-scroll::-webkit-scrollbar{display:none;width:0;height:0}
-.scroll-rail{position:fixed;z-index:45;right:max(8px,calc((100vw - 1240px)/2));top:112px;bottom:26px;width:8px;display:flex;align-items:stretch;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s ease}
-.scroll-rail.visible{opacity:1}.scroll-track{position:absolute;inset:0;width:4px;margin:auto;border-radius:999px;background:rgba(121,145,190,.11);border:1px solid rgba(255,255,255,.45);backdrop-filter:blur(10px)}
-.scroll-thumb{position:absolute;left:1px;width:6px;min-height:38px;border-radius:999px;background:linear-gradient(180deg,rgba(88,159,255,.58),rgba(146,118,246,.58));box-shadow:0 4px 14px rgba(82,119,211,.18),inset 0 1px rgba(255,255,255,.7);transition:top .1s linear,height .1s linear}
 
-.dashboard{display:flex;flex-direction:column;gap:38px;min-height:100%}
-.school-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:5px 4px 2px;min-height:62px}.school-meta{display:flex;align-items:center;gap:12px;min-width:0}
-.school-symbol{width:45px;height:45px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.62);border:1px solid white;box-shadow:var(--soft-shadow);color:#6b8dff;font-size:18px}
-.eyebrow{font-size:9px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:#8793a9}.school-name{font-size:25px;font-weight:850;letter-spacing:-.055em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.school-detail{font-size:11px;color:#8994a7;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.header-actions{display:flex;gap:7px;flex-shrink:0}
+.school-strip{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:4px 4px 2px;min-height:70px}.school-meta{display:flex;align-items:center;gap:12px;min-width:0}.school-symbol{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.64);border:1px solid white;box-shadow:var(--soft-shadow);color:#6b8dff;font-size:18px;flex:0 0 auto}.eyebrow{font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:#8793a9}.school-name{font-size:26px;font-weight:900;letter-spacing:-.055em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.school-detail{font-size:11px;color:#8994a7;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.header-actions{display:flex;gap:7px;flex-shrink:0}
 
-.section-block{display:flex;flex-direction:column;gap:12px}.section-kicker{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px}.section-title{font-size:17px;font-weight:850;letter-spacing:-.045em}.section-sub{font-size:10px;color:#8994a7;margin-top:4px}.section-side{display:flex;align-items:center;gap:6px;flex-shrink:0}.section-index{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border-radius:999px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.7);font-size:8px;font-weight:850;letter-spacing:.1em;color:#94a0b2}
+.tab-panel{display:none;animation:panelIn .35s ease}.tab-panel.active{display:block}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:2px 2px 14px}.section-title{font-size:21px;font-weight:900;letter-spacing:-.05em}.section-sub{font-size:10px;color:#8a95a8;margin-top:5px}.section-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 
-.today-grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(300px,.78fr);gap:15px;align-items:stretch}
-.card{position:relative;border-radius:27px;overflow:hidden}
-.today-card{padding:31px 30px 28px;min-height:318px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.5));border:1px solid rgba(255,255,255,.88);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(150%);-webkit-backdrop-filter:blur(25px) saturate(150%)}
-.today-card:before{content:"";position:absolute;width:290px;height:290px;right:-120px;top:-125px;border-radius:50%;background:radial-gradient(circle,#bfe4ff,transparent 68%);opacity:.64;pointer-events:none}
-.date-row{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.date-big{font-size:30px;font-weight:850;letter-spacing:-.06em}.date-small{font-size:12px;color:#8290a5;margin-top:7px}.today-tag{padding:8px 11px;border-radius:999px;background:rgba(89,145,255,.1);color:#4f7fe7;font-size:9px;font-weight:850;letter-spacing:.1em;flex-shrink:0}
-.menu-heading{font-size:9px;letter-spacing:.12em;color:#9aa5b7;font-weight:800;margin-top:31px;margin-bottom:12px}.menu-list{display:flex;flex-wrap:wrap;gap:8px;max-width:80%;padding-right:4px;min-height:84px;align-content:flex-start}.menu-chip{padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(68,92,137,.07);font-size:11px;color:#43516a;line-height:1.25;white-space:nowrap}
-.calorie{position:absolute;right:30px;bottom:27px;text-align:right}.calorie-label{font-size:9px;color:#96a0b1}.calorie-value{font-size:24px;font-weight:850;color:#456fe0;margin-top:3px;letter-spacing:-.035em}
+/* Meal */
+.meal-layout{display:grid;grid-template-columns:minmax(0,1.48fr) minmax(290px,.82fr);gap:16px;align-items:stretch}.meal-hero,.meal-ai,.glass-card{position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.76),rgba(255,255,255,.46));border:1px solid rgba(255,255,255,.88);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(150%);-webkit-backdrop-filter:blur(25px) saturate(150%)}
+.meal-hero{padding:31px 31px 29px;min-height:340px}.meal-hero:before{content:"";position:absolute;width:320px;height:320px;right:-140px;top:-140px;border-radius:50%;background:radial-gradient(circle,#bde4ff,transparent 68%);opacity:.68;pointer-events:none}.date-row{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.date-big{font-size:31px;font-weight:900;letter-spacing:-.06em}.date-small{font-size:12px;color:#8290a5;margin-top:7px}.today-tag{padding:8px 11px;border-radius:999px;background:rgba(89,145,255,.1);color:#4f7fe7;font-size:9px;font-weight:900;letter-spacing:.1em;flex:0 0 auto}.menu-heading{font-size:9px;letter-spacing:.12em;color:#9aa5b7;font-weight:850;margin-top:32px;margin-bottom:12px}.menu-list{display:flex;flex-wrap:wrap;gap:8px;max-width:78%;min-height:92px;align-content:flex-start}.menu-chip{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(68,92,137,.07);font-size:11px;color:#43516a;line-height:1.25;white-space:nowrap}.meal-foot{position:absolute;left:31px;right:31px;bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}.meal-note{font-size:10px;color:#9aa4b6;line-height:1.5;max-width:58%}.calorie{text-align:right}.calorie-label{font-size:9px;color:#96a0b1}.calorie-value{font-size:25px;font-weight:900;color:#456fe0;margin-top:3px;letter-spacing:-.04em}
+.meal-ai{padding:28px 27px 25px;min-height:340px;background:linear-gradient(145deg,rgba(245,250,255,.82),rgba(235,229,255,.56));display:flex;flex-direction:column;justify-content:space-between}.meal-ai:after{content:"✦";position:absolute;right:14px;top:4px;font-size:96px;line-height:1;color:rgba(133,117,255,.08);transform:rotate(15deg);pointer-events:none}.ai-label{font-size:9px;letter-spacing:.12em;font-weight:900;color:#8b80d6}.ai-title{font-size:20px;font-weight:900;margin-top:7px}.ai-copy{font-size:13px;line-height:1.75;color:#69758d;margin-top:28px;white-space:pre-line}.ai-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}.ai-footer-note{font-size:9px;color:#98a2b2}.ai-button{border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.88);color:#63708a;font-size:10px;font-weight:850;box-shadow:inset 0 1px white}
+.week-section{margin-top:24px}.week-shell{padding:12px;border-radius:26px;background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.72);box-shadow:var(--soft-shadow);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%)}.week-scroller{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:2px}.week-scroller::-webkit-scrollbar{display:none}.week-day{scroll-snap-align:start;flex:0 0 160px;min-height:122px;padding:15px 14px;border-radius:20px;text-align:left;background:rgba(255,255,255,.53);border:1px solid rgba(255,255,255,.74);color:#536178;box-shadow:inset 0 1px white;transition:transform .22s,background .22s,box-shadow .22s}.week-day:hover{transform:translateY(-2px)}.week-day.active{background:linear-gradient(145deg,rgba(231,244,255,.9),rgba(255,255,255,.64));box-shadow:0 14px 28px rgba(77,124,208,.1),inset 0 1px white;transform:translateY(-2px)}.day-top{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}.day-name{font-size:9px;color:#8c98ab}.day-num{font-size:24px;font-weight:900;color:#30405d}.day-meal{font-size:10px;line-height:1.55;margin-top:16px;height:35px;overflow:hidden;color:#66738a}.day-cal{font-size:8px;color:#9ba5b4;margin-top:12px}
 
-.ai-card{padding:28px 27px 25px;min-height:318px;background:linear-gradient(145deg,rgba(245,250,255,.82),rgba(235,229,255,.56));border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(160%);-webkit-backdrop-filter:blur(25px) saturate(160%);display:flex;flex-direction:column;justify-content:space-between}
-.ai-card:after{content:"✦";position:absolute;right:15px;top:6px;font-size:96px;line-height:1;color:rgba(133,117,255,.08);transform:rotate(15deg);pointer-events:none}.ai-top{display:flex;justify-content:space-between;gap:14px}.ai-label{font-size:9px;letter-spacing:.12em;font-weight:850;color:#8b80d6}.ai-title{font-size:20px;font-weight:850;margin-top:7px}.ai-mark{width:37px;height:37px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#9e8aff,#6e9cff);box-shadow:0 8px 18px rgba(123,116,236,.22);flex-shrink:0}.ai-copy{position:relative;z-index:2;margin-top:22px;font-size:13px;line-height:1.75;color:#53617a;max-width:95%;min-height:88px;display:flex;align-items:flex-start}.ai-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:13px}.ai-footer-note{font-size:9px;color:#8994a7;line-height:1.45;max-width:44%}.ai-button{border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.74);border:1px solid white;color:#6a65b9;font-size:10px;font-weight:800;box-shadow:0 5px 15px rgba(85,75,160,.08);transition:.2s;white-space:nowrap}.ai-button:hover{transform:translateY(-1px);background:white}
+/* Timetable */
+.timetable-toolbar,.schedule-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.day-picker{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px}.day-picker::-webkit-scrollbar{display:none}.day-pill{min-width:62px;padding:9px 10px;border-radius:15px;background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.78);color:#67738b;box-shadow:inset 0 1px white;transition:.2s}.day-pill:hover{transform:translateY(-1px)}.day-pill.active{background:linear-gradient(145deg,rgba(228,242,255,.9),rgba(255,255,255,.72));color:#4777d8;box-shadow:0 10px 20px rgba(67,124,212,.09),inset 0 1px white}.day-pill .w{font-size:8px;color:#8b97aa}.day-pill .d{font-size:18px;font-weight:900;margin-top:3px}.filter-pair{display:flex;gap:7px;align-items:center}.select-pill{appearance:none;border:1px solid rgba(255,255,255,.88);background:rgba(255,255,255,.62);border-radius:13px;padding:9px 12px;color:#5c6a82;font-size:10px;outline:none;box-shadow:inset 0 1px white}.timetable-card{padding:23px;border-radius:28px}.timetable-meta{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}.timetable-date{font-size:25px;font-weight:900;letter-spacing:-.055em}.timetable-sub{font-size:10px;color:#8b96a9;margin-top:5px}.timetable-wrap{overflow:hidden;border-radius:22px;background:rgba(255,255,255,.32);border:1px solid rgba(255,255,255,.68);padding:8px;box-shadow:inset 0 1px white}.timetable{width:100%;border-collapse:separate;border-spacing:7px;table-layout:fixed}.timetable th,.timetable td{border-radius:15px;text-align:center;background:rgba(255,255,255,.47);font-size:9px;color:#65728a;padding:8px 6px;min-height:52px}.timetable th{background:rgba(227,237,255,.68);font-weight:900}.timetable td{height:64px;vertical-align:middle}.timetable .period-cell{width:64px;background:rgba(255,255,255,.28);color:#949fb0;font-size:9px}.subject{font-size:11px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subject-room{font-size:8px;color:#9ca6b6;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.single-day-table{width:100%;border-collapse:separate;border-spacing:0 8px}.single-day-table tr{background:rgba(255,255,255,.43)}.single-day-table td{padding:15px 14px}.single-day-table td:first-child{width:78px;border-radius:16px 0 0 16px;color:#97a1b1;font-size:10px}.single-day-table td:last-child{border-radius:0 16px 16px 0}.single-subject{font-size:15px;font-weight:850}.single-room{font-size:9px;color:#9ba5b4;margin-top:4px}
 
-.week-wrap{display:flex;flex-direction:column;gap:12px}.week-card{padding:12px;border-radius:26px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.78);box-shadow:var(--soft-shadow),inset 0 1px white;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.week-scroller{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;padding:1px 1px 3px}.week-scroller::-webkit-scrollbar{display:none;width:0;height:0}
-.week-item,.week-day{flex:0 0 182px;min-height:112px;padding:14px;border-radius:19px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.72);color:#53617a;text-align:left;transition:.25s cubic-bezier(.2,.8,.2,1);box-shadow:0 4px 14px rgba(72,94,140,.05)}
-.week-item:hover,.week-day:hover{transform:translateY(-3px);background:rgba(255,255,255,.78);box-shadow:0 12px 24px rgba(72,94,140,.1)}.week-item.active,.week-day.active{background:linear-gradient(145deg,#eaf5ff,#f0ecff);border-color:rgba(108,148,255,.35);box-shadow:0 10px 25px rgba(88,125,220,.13)}
-.day-top{display:flex;justify-content:space-between;font-size:9px;color:#94a0b3}.day-num{font-size:20px;font-weight:850;color:#31405b}.day-meal{margin-top:11px;font-size:10px;line-height:1.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.day-cal{margin-top:7px;font-size:9px;color:#8c98aa}
+/* Schedule */
+.month-chip{display:flex;align-items:center;gap:6px}.month-label{min-width:92px;text-align:center;font-size:12px;font-weight:850;color:#526079}.schedule-card{padding:22px 22px 20px;border-radius:28px}.schedule-list{display:grid;gap:9px}.event{display:grid;grid-template-columns:60px minmax(0,1fr);gap:13px;align-items:center;padding:13px 12px;border-radius:17px;background:rgba(255,255,255,.43);border:1px solid rgba(255,255,255,.62);min-height:64px}.event-date{font-size:10px;color:#8d98a9;font-weight:800;line-height:1.35}.event-date.today-event{color:#477fe9}.event-title{font-size:12px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event-desc{font-size:9px;color:#98a2b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}.schedule-empty{padding:42px 12px;text-align:center;color:#98a2b2;font-size:11px}.schedule-more{margin-top:12px;width:100%;height:40px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:#69758b;font-size:10px;font-weight:850}
 
-.school-life{padding-bottom:20px}.planner-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;align-items:stretch}.schedule-card,.timetable-card{padding:22px 22px 21px;min-height:335px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(255,255,255,.46));border:1px solid rgba(255,255,255,.86);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(23px);-webkit-backdrop-filter:blur(23px)}
-.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.card-head h3{margin:0;font-size:15px;font-weight:850}.card-head p{margin:5px 0 0;color:#8a96a9;font-size:9px;line-height:1.45;max-width:280px}.month-nav{display:flex;align-items:center;gap:5px}.nav-btn{width:30px;height:30px;border-radius:10px;font-size:12px}.month-label{font-size:10px;font-weight:800;color:#66738a;min-width:72px;text-align:center}
-.schedule-list{margin-top:17px;display:grid;gap:8px}.event{display:grid;grid-template-columns:55px minmax(0,1fr);gap:11px;align-items:center;padding:10px 10px;border-radius:14px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.55);min-height:50px}.event-date{font-size:10px;color:#8c98aa;font-weight:750;line-height:1.35}.event-date.today-event{color:#477fe9}.event-title{font-size:11px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event-desc{font-size:8.5px;color:#98a2b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.more-btn{margin-top:12px;width:100%;height:34px;border-radius:12px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:#6c7a91;font-size:9px;font-weight:800;transition:.2s}.more-btn:hover{background:rgba(255,255,255,.8);transform:translateY(-1px)}
-.timetable-controls{display:flex;gap:7px;margin-top:16px}.control{appearance:none;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.58);border-radius:12px;padding:8px 10px;color:#607089;font-size:10px;outline:none;box-shadow:inset 0 1px white;min-width:88px}.timetable-scroll{margin-top:13px;overflow:visible}.timetable{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed}.timetable th,.timetable td{height:34px;border-radius:9px;text-align:center;background:rgba(255,255,255,.42);font-size:8px;color:#64728a;padding:3px}.timetable th{background:rgba(227,237,255,.64);font-weight:850}.timetable td{font-size:9px}.timetable .period-cell{width:45px;background:rgba(255,255,255,.26);color:#96a0b0}.subject{font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subject-room{font-size:7px;color:#9ca6b5;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.data-status{font-size:9px;color:#98a3b5;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.65)}
+/* Bottom tabs */
+.tabbar-zone{position:absolute;z-index:30;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 0 calc(4px + env(safe-area-inset-bottom));pointer-events:none}.tabbar{width:min(760px,calc(100% - 8px));height:72px;border-radius:25px;background:rgba(255,255,255,.64);border:1px solid rgba(255,255,255,.86);box-shadow:0 18px 45px rgba(74,96,145,.15),inset 0 1px white;backdrop-filter:blur(30px) saturate(175%);-webkit-backdrop-filter:blur(30px) saturate(175%);display:grid;grid-template-columns:repeat(3,1fr);padding:6px;pointer-events:auto}
+.tab{position:relative;border-radius:19px;background:transparent;color:#66738b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;font-weight:750;transition:.22s}.tab .tab-icon{font-size:18px;line-height:1}.tab .tab-label{font-size:9px}.tab.active{background:linear-gradient(145deg,rgba(235,246,255,.96),rgba(246,239,255,.83));color:#4a6fd7;box-shadow:0 9px 20px rgba(78,110,184,.1),inset 0 1px white}.tab::after{content:"";position:absolute;bottom:4px;left:50%;width:22px;height:3px;border-radius:999px;background:linear-gradient(90deg,#70b9ff,#957eff);opacity:0;transform:translateX(-50%) scale(.7);transition:.2s}.tab.active::after{opacity:1;transform:translateX(-50%) scale(1)}
 
-/* Wizard */
-.wizard-wrap{min-height:calc(100dvh - 112px);display:grid;place-items:center;padding:10px 0 40px}.wizard{width:min(620px,100%);border-radius:30px;padding:1px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.55));box-shadow:0 35px 100px rgba(74,99,160,.17);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}.wizard>div{border-radius:29px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.8)}.wizard-top{padding:28px 28px 21px;display:flex;justify-content:space-between;gap:18px}.wizard-title{font-size:29px;font-weight:850;letter-spacing:-.06em;margin-top:7px}.wizard-note{font-size:11px;line-height:1.65;color:#8490a4;margin-top:7px;max-width:480px}.step-count{padding:7px 10px;border-radius:999px;background:rgba(104,142,255,.1);color:#5d78cc;font-size:9px;font-weight:850;white-space:nowrap}.wizard-body{padding:25px 28px 28px}.progress{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:25px}.progress span{height:4px;border-radius:99px;background:rgba(120,138,172,.12)}.progress span.active{background:linear-gradient(90deg,#62a9ff,#9b85ff)}.field-label{display:block;font-size:10px;font-weight:800;color:#69778f;margin-bottom:8px}.input,.picker{width:100%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.54);color:#2d3a53;border-radius:15px;padding:14px 15px;outline:none;box-shadow:inset 0 1px white,0 6px 16px rgba(76,99,145,.05);transition:.2s}.input:focus,.picker:focus{border-color:rgba(90,145,255,.55);box-shadow:0 0 0 4px rgba(90,145,255,.08),inset 0 1px white}.primary,.secondary{width:100%;border-radius:15px;padding:13px 15px;font-weight:800;font-size:11px;transition:.22s}.primary{color:#fff;background:linear-gradient(135deg,#64aaff,#7e8fff 55%,#a57eff);box-shadow:0 10px 25px rgba(101,132,241,.2)}.primary:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(101,132,241,.25)}.primary:disabled{opacity:.42;transform:none;cursor:not-allowed}.secondary{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);color:#738096}.school-results{margin-top:8px;max-height:160px;overflow:auto;scrollbar-width:none}.school-results::-webkit-scrollbar{display:none}.school-item{display:block;width:100%;padding:10px 12px;text-align:left;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.7);margin-bottom:5px;color:#3c4960}.school-item small{display:block;color:#8c97a8;margin-top:3px;font-size:8px}
+/* Setup */
+.setup-container-shell{height:100%;min-height:0;overflow:auto;scrollbar-width:none;-ms-overflow-style:none}.setup-container-shell::-webkit-scrollbar{display:none;width:0;height:0}
+.setup-shell{min-height:100%;height:auto;display:flex;align-items:flex-start;justify-content:center;padding:28px 4px 44px}.setup-card{width:min(700px,100%);margin:0 auto;padding:0;border-radius:32px;overflow:hidden}.setup-top{padding:32px 32px 28px;background:linear-gradient(145deg,rgba(255,255,255,.77),rgba(241,246,255,.55));border-bottom:1px solid rgba(255,255,255,.7)}.setup-kicker{font-size:9px;font-weight:900;letter-spacing:.14em;color:#8c96a9}.setup-title{font-size:34px;font-weight:900;letter-spacing:-.065em;margin-top:8px}.setup-copy{font-size:12px;color:#8995a8;line-height:1.6;margin-top:10px;max-width:560px}.setup-body{padding:28px 32px 32px;background:rgba(255,255,255,.28)}.stepper{display:flex;align-items:center;gap:8px;margin-bottom:24px}.step-dot{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7);color:#98a1af;font-size:9px;font-weight:900}.step-dot.active{background:linear-gradient(145deg,#7dbbff,#7682ff);color:white;box-shadow:0 7px 16px rgba(92,124,232,.18)}.step-line{height:1px;flex:1;background:rgba(255,255,255,.72)}.setup-step-title{font-size:21px;font-weight:900}.setup-step-sub{font-size:10px;color:#8f9aab;margin-top:6px}.field{margin-top:20px}.field-label{display:block;font-size:10px;font-weight:850;color:#66738a;margin-bottom:8px}.picker,.input,.class-select{width:100%;height:49px;border-radius:16px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.58);color:#56647c;padding:0 14px;outline:none;box-shadow:inset 0 1px white}.picker{display:flex;align-items:center;justify-content:space-between}.input::placeholder{color:#a0a8b5}.school-results{margin-top:9px;max-height:210px;overflow:auto;scrollbar-width:none}.school-results::-webkit-scrollbar{display:none}.school-item{width:100%;text-align:left;padding:12px 13px;border-radius:14px;background:rgba(255,255,255,.47);border:1px solid rgba(255,255,255,.6);margin-bottom:6px;color:#58657d}.school-item strong{font-size:11px;display:block}.school-item small{font-size:8px;color:#98a2b2;display:block;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.grade-class-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.primary,.secondary{height:49px;border-radius:16px;font-weight:850;font-size:11px}.primary{background:linear-gradient(145deg,#70b7ff,#7782ff 58%,#a27fff);color:white;box-shadow:0 12px 22px rgba(95,122,228,.22),inset 0 1px rgba(255,255,255,.38)}.secondary{background:rgba(255,255,255,.56);color:#67748a;border:1px solid rgba(255,255,255,.78)}.primary:disabled{opacity:.42;cursor:not-allowed}.setup-actions{display:grid;grid-template-columns:120px 1fr;gap:9px;margin-top:24px}
 
-/* Glass popups — all popup scrolling is scrollbar-free */
-.modal-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(42,57,88,.18);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.modal{width:min(720px,calc(100vw - 32px));max-height:min(80dvh,760px);display:flex;flex-direction:column;border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.86),rgba(245,248,255,.72));border:1px solid rgba(255,255,255,.92);box-shadow:0 35px 100px rgba(45,65,110,.22),inset 0 1px white;backdrop-filter:blur(35px) saturate(150%);-webkit-backdrop-filter:blur(35px) saturate(150%);animation:pop .34s cubic-bezier(.16,1,.3,1)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 19px;border-bottom:1px solid rgba(118,136,170,.1);flex-shrink:0}.modal-title{font-size:15px;font-weight:850}.modal-body{padding:17px 19px;overflow:auto;scrollbar-width:none;-ms-overflow-style:none}.modal-body::-webkit-scrollbar{display:none;width:0;height:0}.modal-footer{padding:13px 19px 17px;border-top:1px solid rgba(118,136,170,.1);flex-shrink:0}.office-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.office-option{padding:12px;border-radius:14px;text-align:left;background:rgba(255,255,255,.54);border:1px solid rgba(255,255,255,.8);color:#4a5870;transition:.2s}.office-option:hover{transform:translateY(-2px);background:rgba(255,255,255,.82);box-shadow:0 9px 20px rgba(74,99,145,.09)}.office-option strong{font-size:10px}.ai-report{white-space:pre-wrap;font-size:12px;line-height:1.8;color:#52617a}.chat-log{display:grid;gap:7px;margin-top:14px}.chat-user,.chat-ai{max-width:84%;padding:9px 11px;border-radius:13px;font-size:10px;line-height:1.5}.chat-user{justify-self:end;background:linear-gradient(135deg,#6caaff,#8d88ff);color:white}.chat-ai{justify-self:start;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);color:#59677d}.chat-row{display:flex;gap:7px}.chat-row .input{padding:10px 12px}.empty,.loading{padding:22px;text-align:center;color:#8d98aa;font-size:10px}
-.toast{position:fixed;z-index:200;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 15px;border-radius:999px;background:rgba(30,42,68,.82);color:#fff;font-size:10px;font-weight:750;box-shadow:0 12px 30px rgba(30,42,68,.2);backdrop-filter:blur(14px);animation:toastIn .25s ease-out}
+/* Modals */
+.modal-backdrop{position:fixed;z-index:100;inset:0;background:rgba(59,73,104,.18);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.modal{width:min(720px,100%);max-height:min(84dvh,780px);display:flex;flex-direction:column;border-radius:30px;overflow:hidden;background:linear-gradient(145deg,rgba(252,254,255,.86),rgba(241,236,255,.72));border:1px solid rgba(255,255,255,.9);box-shadow:0 28px 90px rgba(54,68,105,.2),inset 0 1px white;backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%)}.modal-head{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.64)}.modal-title{font-size:18px;font-weight:900}.modal-body{padding:18px 20px;overflow:auto;scrollbar-width:none}.modal-body::-webkit-scrollbar{display:none}.modal-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.64)}.office-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.office-option{min-height:58px;text-align:left;padding:11px 13px;border-radius:15px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.68);color:#66738b}.office-option:hover{background:rgba(255,255,255,.78);transform:translateY(-1px)}.report{font-size:13px;line-height:1.8;color:#647189;white-space:pre-line}.chat-log{display:grid;gap:8px;margin-top:14px}.chat-user,.chat-ai{max-width:82%;padding:11px 13px;border-radius:15px;font-size:11px;line-height:1.55}.chat-user{justify-self:end;background:rgba(126,167,255,.13);color:#5270b7;border:1px solid rgba(126,167,255,.15)}.chat-ai{background:rgba(255,255,255,.56);color:#68748b;border:1px solid rgba(255,255,255,.65)}.chat-row{display:flex;gap:8px}.chat-row .input{height:44px;flex:1}.chat-send{height:44px;padding:0 15px;border-radius:14px;background:linear-gradient(145deg,#70b7ff,#7782ff);color:#fff;font-size:10px;font-weight:850}
+.toast{position:fixed;z-index:200;left:50%;bottom:108px;transform:translateX(-50%);padding:11px 14px;border-radius:999px;background:rgba(33,43,65,.82);color:#fff;font-size:10px;box-shadow:0 15px 35px rgba(33,43,65,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.loading,.empty{display:grid;place-items:center;min-height:120px;text-align:center;color:#98a2b2;font-size:11px}.spinner{width:28px;height:28px;border-radius:50%;border:3px solid rgba(98,123,205,.16);border-top-color:#6b83ff;animation:spin 1s linear infinite;margin:0 auto 9px}
 
-/* Motion */
-@keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(14px,-12px,0) scale(1.03)}}
-@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(18px,-12px,0) scale(1.04)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-@media(max-width:900px){
-  .today-grid{grid-template-columns:1fr}.ai-card{min-height:250px}.planner-grid{grid-template-columns:1fr}.schedule-card,.timetable-card{min-height:0}.scroll-rail{right:6px}
+
+/* ======================== VIEW MODE CONTROL ======================== */
+.topbar{height:auto;min-height:94px}
+.topbar-inner{padding:10px 12px 10px 14px;align-items:center}
+.brand{align-items:flex-start}
+.brand-info{min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.brand-title{line-height:1.05}
+.brand-sub{margin-top:4px}
+.view-mode-button{margin-top:8px;min-height:36px;max-width:min(760px,68vw);padding:7px 11px;border-radius:14px;border:1px solid rgba(255,255,255,.82);background:linear-gradient(135deg,rgba(255,255,255,.73),rgba(243,235,255,.55));box-shadow:0 8px 20px rgba(98,84,170,.07),inset 0 1px white;backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;color:#526078;text-align:left;transition:transform .22s,background .22s,box-shadow .22s}
+.view-mode-button:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(255,255,255,.84),rgba(243,235,255,.67));box-shadow:0 12px 25px rgba(98,84,170,.10),inset 0 1px white}
+.view-mode-button.direct-mode{background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(232,243,255,.58))}
+.view-mode-icon{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(145deg,#79baff,#7886ff 62%,#9a80ff);color:#fff;font-size:11px;box-shadow:0 5px 12px rgba(94,119,230,.14);flex:0 0 auto}
+.view-mode-copy{min-width:0;display:block}
+.view-mode-copy strong{display:block;font-size:10px;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.view-mode-copy small{display:block;font-size:7.5px;color:#929cad;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.view-mode-arrow{font-size:17px;color:#7585a5;line-height:1}
+
+/* ======================== AI FULL VIEW ======================== */
+.view-shell{position:relative;height:100%;min-height:0}.view-switch-wrap{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1.8fr) minmax(240px,.72fr);gap:10px;padding:10px 0 12px;align-items:stretch}.ai-top-button-wrap{min-width:0}.ai-top-button.active{background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(240,232,255,.78));box-shadow:0 16px 34px rgba(98,84,170,.12),inset 0 1px white}
+.direct-view-button{min-height:60px;padding:9px 14px;border-radius:19px;border:1px solid rgba(255,255,255,.88);background:rgba(255,255,255,.56);box-shadow:0 12px 26px rgba(74,96,145,.08),inset 0 1px white;backdrop-filter:blur(24px) saturate(155%);-webkit-backdrop-filter:blur(24px) saturate(155%);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;color:#66738b;transition:transform .22s,background .22s,box-shadow .22s;text-align:left}.direct-view-button:hover{transform:translateY(-2px);background:rgba(255,255,255,.72);box-shadow:0 18px 32px rgba(74,96,145,.11),inset 0 1px white}.direct-view-button strong{display:block;font-size:11px;font-weight:900}.direct-view-button small{display:block;font-size:8px;color:#9aa3b3;margin-top:3px}.direct-view-icon{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:rgba(113,151,239,.1);color:#6085e1;font-size:15px}.direct-view-arrow{font-size:18px;color:#8290aa}.dashboard-ai-mode .tabbar-zone{display:none}
+.ai-view{height:100%;min-height:0;display:flex;flex-direction:column;gap:12px}.ai-view-head{flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 5px 3px}.ai-view-kicker{font-size:9px;font-weight:900;letter-spacing:.15em;color:#8d82d8}.ai-view-title{font-size:24px;font-weight:900;letter-spacing:-.06em;margin-top:5px}.ai-view-sub{font-size:10px;color:#8b96a9;margin-top:6px}.ai-live-pill{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.54);border:1px solid rgba(255,255,255,.78);font-size:8px;color:#7e8a9f;white-space:nowrap;box-shadow:inset 0 1px white}.ai-live-pill span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6fd49b;margin-right:5px;vertical-align:1px;box-shadow:0 0 0 4px rgba(111,212,155,.09)}
+.ai-chat-scroll{flex:1 1 auto;min-height:0;border-radius:27px;border:1px solid rgba(255,255,255,.88);background:linear-gradient(145deg,rgba(255,255,255,.64),rgba(244,240,255,.45));box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(150%);-webkit-backdrop-filter:blur(25px) saturate(150%);overflow:auto;scrollbar-width:none;-ms-overflow-style:none;padding:22px;overscroll-behavior:contain}.ai-chat-scroll::-webkit-scrollbar{display:none;width:0;height:0}.ai-chat-log{display:grid;gap:12px;max-width:920px;margin:0 auto}.ai-welcome-card{padding:16px 17px;border-radius:20px;background:linear-gradient(145deg,rgba(249,251,255,.84),rgba(242,234,255,.64));border:1px solid rgba(255,255,255,.84);box-shadow:0 10px 24px rgba(77,96,148,.07),inset 0 1px white}.ai-welcome-top{display:flex;align-items:center;gap:9px}.ai-welcome-mark{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;color:white;background:linear-gradient(145deg,#76b9ff,#7783ff 58%,#9b7fff);box-shadow:0 8px 18px rgba(92,117,236,.16)}.ai-welcome-title{font-size:12px;font-weight:900}.ai-welcome-copy{font-size:10px;color:#8c97a9;margin-top:8px;line-height:1.65}.ai-suggestion-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.ai-suggestion{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);font-size:9px;color:#66738a;cursor:pointer;box-shadow:inset 0 1px white}.ai-message{max-width:min(78%,760px);padding:13px 15px;border-radius:19px;font-size:11px;line-height:1.75;white-space:pre-wrap;word-break:break-word}.ai-message.user{justify-self:end;background:linear-gradient(145deg,rgba(115,166,255,.18),rgba(150,132,255,.12));border:1px solid rgba(124,150,245,.16);color:#5670ae;border-bottom-right-radius:7px}.ai-message.model{justify-self:start;background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.78);color:#68758d;box-shadow:0 8px 20px rgba(66,85,128,.05),inset 0 1px white;border-bottom-left-radius:7px}.ai-error-card{padding:12px 14px;border-radius:17px;background:rgba(255,247,249,.64);border:1px solid rgba(255,218,224,.75);color:#9c7680;font-size:10px;line-height:1.6}.ai-error-detail{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:8px;opacity:.76;margin-top:5px;word-break:break-word}
+.ai-composer{flex:0 0 auto;border-radius:22px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.86);box-shadow:0 14px 32px rgba(74,96,145,.09),inset 0 1px white;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);padding:10px 12px 8px}.ai-composer-inner{display:flex;gap:8px;align-items:center}.ai-chat-input{flex:1;height:46px;border-radius:15px;border:1px solid rgba(255,255,255,.92);background:rgba(248,250,255,.72);padding:0 13px;color:#526078;outline:none;box-shadow:inset 0 1px white;font-size:11px}.ai-chat-input::placeholder{color:#a0a8b6}.ai-composer-hint{font-size:8px;color:#a0a7b4;margin:6px 3px 0}
+@media (max-width:900px){.view-switch-wrap{grid-template-columns:1fr 220px}}@media (max-width:680px){.view-switch-wrap{grid-template-columns:1fr;gap:8px}.direct-view-button{min-height:49px}.ai-view-head{padding-top:8px}.ai-view-title{font-size:20px}.ai-live-pill{display:none}.ai-chat-scroll{padding:16px;border-radius:23px}.ai-message{max-width:88%;font-size:10px}.ai-composer{border-radius:19px}.ai-composer-hint{display:none}}
+
+@media (max-width:900px){
+  .topbar{min-height:98px}
+  .view-mode-button{max-width:min(72vw,650px)}
+  .app-shell{width:min(100%,calc(100% - 18px));padding-top:9px;padding-bottom:9px}
+  .topbar{height:58px}.brand-sub{display:none}
+  .meal-layout{grid-template-columns:1fr}.meal-ai{min-height:260px}
+  .meal-hero{min-height:330px}.menu-list{max-width:100%}.meal-foot{position:static;margin-top:14px;align-items:flex-end}.meal-note{max-width:60%}
+  .school-name{font-size:23px}
 }
-@media(max-width:680px){
-  .page{width:calc(100% - 18px);padding-top:88px}.main-scroll{height:calc(100dvh - 98px);padding-bottom:56px}.topbar{width:calc(100% - 18px);top:9px}.brand-sub{display:none}.header-actions .small-btn:first-child{display:none}.school-name{font-size:20px}.school-header{align-items:flex-start}.header-actions{padding-top:2px}.today-card{padding:24px 22px;min-height:300px}.date-big{font-size:24px}.menu-list{max-width:100%;min-height:96px}.calorie{right:22px;bottom:22px}.ai-card{padding:23px 22px;min-height:280px}.week-item,.week-day{flex-basis:154px;min-height:104px}.planner-grid{gap:12px}.schedule-card,.timetable-card{padding:19px 17px}.card-head p{max-width:190px}.office-grid{grid-template-columns:1fr}.wizard-wrap{min-height:calc(100dvh - 100px);padding:6px 0 26px}.wizard-title{font-size:25px}.wizard-top,.wizard-body{padding-left:20px;padding-right:20px}
+@media (max-width:680px){
+  .topbar{min-height:108px}
+  .topbar-inner{padding:9px 9px 9px 10px;align-items:flex-start}
+  .brand{width:100%;align-items:flex-start;gap:10px}
+  .brand-info{min-width:0;flex:1}
+  .view-mode-button{width:100%;max-width:none;min-height:34px;padding:6px 9px;border-radius:13px;margin-top:7px}
+  .view-mode-copy strong{font-size:9px}
+  .view-mode-copy small{font-size:7px}
+  .view-mode-icon{width:22px;height:22px;border-radius:7px;font-size:10px}
+  .view-mode-arrow{font-size:16px}
+  .app-shell{width:100%;padding:8px 8px 0}
+  .topbar{border-radius:21px}.topbar-inner{padding-left:13px}.brand-mark{width:38px;height:38px}.brand-title{font-size:14px}.top-actions .small-btn{display:none}.top-actions .top-today{display:inline-flex}
+  .ai-bar-wrap{padding:10px 0 9px}.ai-top-button{min-height:64px;border-radius:20px;padding:0 15px}.ai-top-label{font-size:12px}.ai-top-sub{font-size:8px}.ai-top-mark{width:34px;height:34px;border-radius:11px}.ai-top-arrow{font-size:18px}
+  .school-strip{padding:3px 2px 4px;min-height:60px}.school-symbol{width:42px;height:42px}.school-name{font-size:20px}.school-detail{font-size:10px}.header-actions .small-btn{padding:9px 10px;font-size:9px}
+  .section-title{font-size:18px}.section-sub{font-size:9px}.section-head{margin-bottom:11px}
+  .meal-hero,.meal-ai,.timetable-card,.schedule-card{border-radius:24px}.meal-hero{padding:24px 21px 22px;min-height:0}.date-big{font-size:26px}.menu-heading{margin-top:25px}.meal-foot{margin-top:18px}.meal-note{font-size:9px}.calorie-value{font-size:22px}
+  .week-shell{border-radius:22px;padding:9px}.week-day{flex-basis:142px;min-height:112px}
+  .timetable-card{padding:18px}.timetable-meta{align-items:flex-start;flex-direction:column}.timetable-date{font-size:21px}.single-day-table td{padding:13px 11px}.single-subject{font-size:14px}
+  .event{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:11px 10px}.event-title{font-size:11px}.event-desc{font-size:8px}
+  .tabbar{width:calc(100% - 16px);height:68px;border-radius:23px}.tab .tab-icon{font-size:17px}
+  .setup-shell{padding:10px 0}.setup-card{border-radius:27px}.setup-top{padding:25px 20px 22px}.setup-body{padding:22px 20px 24px}.setup-title{font-size:29px}.grade-class-grid{grid-template-columns:1fr 1fr}.office-grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+.setup-question{font-size:29px;font-weight:900;letter-spacing:-.065em;margin-top:2px}.setup-focus-field{margin-top:28px}.big-input{height:58px;border-radius:18px;font-size:15px}.office-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:24px;max-height:50dvh;overflow:auto;scrollbar-width:none;padding:2px}.office-options::-webkit-scrollbar{display:none}.office-option{min-height:64px;text-align:left;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.54);border:1px solid rgba(255,255,255,.78);color:#5f6d84;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:transform .2s,background .2s,box-shadow .2s}.office-option:hover{transform:translateY(-2px);background:rgba(255,255,255,.82);box-shadow:0 10px 22px rgba(69,93,137,.10)}.office-option.selected{background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(235,244,255,.74));box-shadow:0 10px 24px rgba(80,113,182,.12),inset 0 1px white;border-color:rgba(116,163,255,.45)}.office-option strong{display:block;font-size:11px}.office-option small{display:block;font-size:8px;color:#99a3b3;margin-top:4px}.office-option b{font-size:14px;color:#6e86ff}.setup-picked{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:17px;margin-bottom:24px;box-shadow:var(--soft-shadow),inset 0 1px white}.setup-picked strong{font-size:11px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.setup-picked small{font-size:8px;color:#97a2b3}.setup-picked-label{font-size:8px;color:#9aa4b4;white-space:nowrap}.setup-actions.single{grid-template-columns:1fr}.setup-reset-row{display:flex;justify-content:center;margin-top:18px}.ghost-link{background:none;color:#9aa4b4;font-size:9px;padding:5px 8px}.setup-container-shell{padding:0 2px}.setup-card{position:relative;z-index:1}.setup-top,.setup-body{position:relative}.setup-body{padding-bottom:34px}.top-today{padding:9px 12px!important}.today-inline{transition:.2s}.today-inline.active{background:rgba(92,139,255,.13);color:#527fe4}.meal-empty-copy{font-size:13px;color:#98a2b2;line-height:1.5}.icon-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}.schedule-card{min-height:420px}.schedule-list{min-height:300px}
+@media (max-width:680px){.setup-shell{min-height:100%;padding:18px 0 32px}.office-options{grid-template-columns:1fr;max-height:48dvh}.setup-question{font-size:26px}.setup-picked{flex-wrap:wrap}.setup-picked-label{width:100%}.top-actions .top-today{display:inline-flex!important}.schedule-card{min-height:0}.schedule-list{min-height:260px}}\n
+
+/* Custom class picker */
+.class-picker-trigger{width:100%;min-height:72px;border-radius:20px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(242,247,255,.5));border:1px solid rgba(255,255,255,.84);box-shadow:0 12px 26px rgba(74,96,145,.08),inset 0 1px white;color:#58667e;transition:transform .22s,background .22s,box-shadow .22s}
+.class-picker-trigger:hover{transform:translateY(-2px);background:rgba(255,255,255,.82);box-shadow:0 18px 32px rgba(74,96,145,.11),inset 0 1px white}.class-picker-kicker{display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:#98a2b2;margin-bottom:4px}.class-picker-value{display:block;font-size:16px;font-weight:900;color:#516078}.class-picker-sub{display:block;font-size:9px;color:#98a2b2;margin-top:4px}.class-picker-arrow{font-size:22px;color:#7c8aaa}.class-modal{width:min(680px,100%);max-height:min(82dvh,720px)}.class-modal .modal-body{padding:20px}.class-picker-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:12px;min-height:320px}.class-picker-pane{min-width:0;padding:13px;border-radius:22px;background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px white}.class-picker-pane-title{font-size:9px;font-weight:900;color:#8b97a9;letter-spacing:.1em;margin-bottom:9px}.class-picker-list{height:300px;overflow:auto;scrollbar-width:none;padding:2px}.class-picker-list::-webkit-scrollbar{display:none}.class-pick-option{width:100%;min-height:46px;border-radius:15px;margin-bottom:7px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7);color:#65728a;font-size:11px;font-weight:800;transition:transform .18s,background .18s,box-shadow .18s}.class-pick-option:hover{transform:translateY(-1px);background:rgba(255,255,255,.82)}.class-pick-option.active{background:linear-gradient(145deg,rgba(227,242,255,.95),rgba(244,239,255,.84));color:#4e73d9;border-color:rgba(111,150,255,.42);box-shadow:0 9px 18px rgba(76,116,212,.09),inset 0 1px white}.class-modal-note{font-size:9px;color:#98a2b2;line-height:1.55;margin-top:12px}.class-modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:13px 20px;border-top:1px solid rgba(255,255,255,.64)}
+@media (max-width:680px){.class-picker-grid{grid-template-columns:1fr;min-height:0}.class-picker-list{height:180px}.class-modal{max-height:88dvh}.class-picker-trigger{min-height:66px}.class-picker-value{font-size:15px}}
+
+/* ============================================================
+   FINAL LAYOUT PASS — standalone mode button + responsive polish
+   (layout only; copy and behavior preserved)
+   ============================================================ */
+#dashboard-container{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+#dashboard-container.hidden{display:none!important}
+.view-mode-standalone{flex:0 0 auto;display:flex;justify-content:center;align-items:center;width:100%;padding:14px 4px 12px}
+.view-mode-standalone .view-mode-button{width:min(980px,100%);max-width:none;min-height:76px;margin:0;padding:12px 20px;border-radius:24px;grid-template-columns:auto minmax(0,1fr) auto;gap:13px;box-shadow:0 18px 38px rgba(98,84,170,.12),inset 0 1px white}
+.view-mode-standalone .view-mode-copy strong{font-size:14px;line-height:1.25}
+.view-mode-standalone .view-mode-copy small{font-size:10px;margin-top:5px}
+.view-mode-standalone .view-mode-icon{width:40px;height:40px;border-radius:13px;font-size:15px}
+.view-mode-standalone .view-mode-arrow{font-size:22px}
+#direct-view{flex:1 1 auto;min-height:0;height:auto}
+#direct-view .main-scroll{min-height:0}
+
+/* PC: keep the archive airy and centered without wasting usable height */
+@media (min-width:1100px){
+  .app-shell{width:min(1320px,calc(100% - 40px));padding-top:16px;padding-bottom:16px}
+  .topbar{height:66px}
+  .view-mode-standalone{padding-top:15px;padding-bottom:14px}
+  .view-mode-standalone .view-mode-button{min-height:80px}
+  .school-strip{padding-left:8px;padding-right:8px}
+  .main-scroll{padding-left:8px;padding-right:8px}
+  .meal-layout{grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:18px}
 }
 
+/* Tablet */
+@media (max-width:900px){
+  .app-shell{width:calc(100% - 18px);padding-top:9px;padding-bottom:9px}
+  .topbar{height:auto;min-height:64px}
+  .topbar-inner{min-height:64px}
+  .brand{min-width:0;flex:1}
+  .brand-info{min-width:0}
+  .brand-title,.brand-sub{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .view-mode-standalone{padding:10px 0 10px}
+  .view-mode-standalone .view-mode-button{min-height:70px;border-radius:22px;padding:11px 16px}
+  .view-mode-standalone .view-mode-copy strong{font-size:13px}
+  .view-mode-standalone .view-mode-copy small{font-size:9px}
+  .view-mode-standalone .view-mode-icon{width:36px;height:36px}
+  .school-strip{padding-left:2px;padding-right:2px}
+  .school-name{max-width:62vw}
+  .meal-layout{grid-template-columns:1fr}
+  .meal-ai,.meal-hero{min-height:0}
+  .meal-foot{position:static;margin-top:20px}
+  .menu-list{max-width:100%}
+  .timetable-meta{align-items:flex-start}
+}
+
+/* Phone */
+@media (max-width:680px){
+  html,body{overscroll-behavior:none}
+  .app-shell{width:100%;height:100dvh;padding:7px 7px 0}
+  .topbar{border-radius:20px;min-height:60px}
+  .topbar-inner{padding:8px 9px 8px 10px;gap:8px}
+  .brand{gap:9px}
+  .brand-mark{width:38px;height:38px;border-radius:13px;font-size:17px}
+  .brand-title{font-size:14px;white-space:nowrap}
+  .brand-sub{display:block;font-size:8px;margin-top:3px;white-space:nowrap}
+  .top-actions{gap:5px}
+  .top-actions .icon-btn{width:36px;height:36px}
+  .top-actions .top-today{display:inline-flex!important;height:36px;padding:8px 10px!important}
+
+  .view-mode-standalone{padding:10px 2px 9px}
+  .view-mode-standalone .view-mode-button{width:100%;min-height:76px;padding:12px 13px;border-radius:22px;gap:10px}
+  .view-mode-standalone .view-mode-icon{width:38px;height:38px;border-radius:12px;font-size:14px}
+  .view-mode-standalone .view-mode-copy strong{font-size:12px;white-space:normal;line-height:1.35}
+  .view-mode-standalone .view-mode-copy small{font-size:8px;line-height:1.4;white-space:normal;margin-top:5px}
+  .view-mode-standalone .view-mode-arrow{font-size:20px}
+
+  .main-scroll{padding:1px 1px calc(108px + env(safe-area-inset-bottom));}
+  .school-strip{min-height:58px;padding:4px 1px 8px;gap:8px}
+  .school-meta{gap:9px;min-width:0}
+  .school-symbol{width:40px;height:40px;border-radius:14px;font-size:16px}
+  .eyebrow{font-size:8px}
+  .school-name{font-size:20px;max-width:58vw}
+  .school-detail{font-size:9px;max-width:58vw}
+  .header-actions{gap:5px}
+  .header-actions .small-btn{padding:8px 9px;font-size:8px}
+
+  .section-head{align-items:flex-start;margin:2px 2px 10px;gap:8px}
+  .section-title{font-size:18px}
+  .section-sub{font-size:9px;line-height:1.4}
+  .section-actions{gap:5px}
+  .section-actions .small-btn{padding:8px 9px;font-size:8px}
+
+  .meal-layout{gap:10px}
+  .meal-hero,.meal-ai,.timetable-card,.schedule-card{border-radius:22px}
+  .meal-hero{padding:22px 18px 19px}
+  .date-row{gap:10px}
+  .date-big{font-size:24px;line-height:1.15}
+  .date-small{font-size:10px;margin-top:5px}
+  .today-tag{padding:7px 9px;font-size:8px}
+  .menu-heading{margin-top:22px;margin-bottom:10px}
+  .menu-list{gap:6px;min-height:0}
+  .menu-chip{padding:9px 10px;border-radius:13px;font-size:10px;white-space:normal;max-width:100%}
+  .meal-foot{margin-top:18px;gap:12px;align-items:flex-end}
+  .meal-note{font-size:8px;max-width:58%;line-height:1.55}
+  .calorie-label{font-size:8px}
+  .calorie-value{font-size:20px;white-space:nowrap}
+  .meal-ai{padding:22px 18px 19px;gap:18px}
+  .ai-title{font-size:18px}
+  .ai-copy{font-size:12px;line-height:1.65;margin-top:22px}
+  .ai-footer{align-items:flex-end}
+  .ai-footer-note{font-size:8px;line-height:1.45}
+  .ai-button{padding:9px 10px;font-size:9px;white-space:nowrap}
+
+  .week-section{margin-top:18px}
+  .week-shell{padding:8px;border-radius:20px}
+  .week-day{flex-basis:138px;min-height:108px;padding:13px 12px;border-radius:18px}
+  .day-num{font-size:22px}
+  .day-meal{font-size:9px;margin-top:13px}
+  .day-cal{font-size:8px;margin-top:9px}
+
+  .timetable-toolbar,.schedule-toolbar{align-items:stretch;gap:8px}
+  .day-picker{width:100%}
+  .filter-pair{width:100%}
+  .select-pill{flex:1;min-width:0}
+  .timetable-card{padding:17px}
+  .timetable-date{font-size:21px}
+  .timetable-sub{font-size:9px;line-height:1.5}
+  .single-day-table{border-spacing:0 6px}
+  .single-day-table td{padding:12px 10px}
+  .single-day-table td:first-child{width:64px;font-size:9px}
+  .single-subject{font-size:13px}
+  .single-room{font-size:8px}
+
+  .schedule-card{padding:17px}
+  .month-label{min-width:82px;font-size:11px}
+  .schedule-list{gap:7px}
+  .event{grid-template-columns:49px minmax(0,1fr);gap:8px;padding:11px 9px;min-height:58px}
+  .event-title{font-size:10px}
+  .event-desc{font-size:8px}
+
+  .tabbar-zone{padding:7px 0 calc(4px + env(safe-area-inset-bottom))}
+  .tabbar{width:calc(100% - 12px);height:66px;border-radius:22px;padding:5px}
+  .tab{border-radius:17px}
+  .tab .tab-icon{font-size:16px}
+  .tab .tab-label{font-size:8px}
+
+  .setup-container-shell{padding:0}
+  .setup-shell{padding:12px 0 calc(20px + env(safe-area-inset-bottom))}
+  .setup-card{width:100%;border-radius:25px}
+  .setup-top{padding:22px 18px 20px}
+  .setup-body{padding:20px 18px 24px}
+  .setup-title{font-size:27px}
+  .setup-copy{font-size:10px;line-height:1.55}
+  .stepper{margin-bottom:19px}
+  .setup-question{font-size:24px}
+  .setup-step-sub{font-size:9px;line-height:1.5}
+  .big-input{height:54px;font-size:14px}
+  .school-results{max-height:34dvh}
+  .class-picker-trigger{min-height:64px;padding:12px 13px}
+  .class-picker-value{font-size:14px}
+  .class-picker-sub{font-size:8px}
+  .setup-actions{grid-template-columns:1fr 1.35fr;gap:7px;margin-top:18px}
+  .primary,.secondary{height:47px;font-size:10px}
+
+  .class-modal{width:calc(100% - 24px);max-height:88dvh;border-radius:25px}
+  .class-modal .modal-body{padding:15px}
+  .class-picker-grid{gap:9px}
+  .class-picker-pane{padding:10px;border-radius:18px}
+  .class-picker-list{height:170px}
+  .class-modal-footer{padding:11px 15px}
+
+  .ai-view-head{padding:7px 2px 2px}
+  .ai-view-title{font-size:20px}
+  .ai-view-sub{font-size:9px}
+  .ai-chat-scroll{padding:14px;border-radius:21px}
+  .ai-message{max-width:91%;font-size:10px;line-height:1.7;padding:12px 13px}
+  .ai-welcome-card{padding:14px;border-radius:19px}
+  .ai-suggestion-row{gap:5px}
+  .ai-suggestion{font-size:8px;padding:7px 8px}
+  .ai-composer{padding:8px;border-radius:19px}
+  .ai-chat-input{height:44px;font-size:10px}
+  .ai-composer-hint{display:none}
+}
+
+/* Small phones: prevent horizontal compression */
+@media (max-width:390px){
+  .brand-sub{display:none}
+  .school-name{max-width:53vw;font-size:18px}
+  .school-detail{max-width:53vw;font-size:8px}
+  .view-mode-standalone .view-mode-button{min-height:82px}
+  .view-mode-standalone .view-mode-copy strong{font-size:11px}
+  .view-mode-standalone .view-mode-copy small{font-size:7.5px}
+  .meal-foot{flex-direction:column;align-items:flex-start}
+  .meal-note{max-width:100%}
+  .calorie{text-align:left}
+  .tabbar{height:63px}
+  .tab .tab-label{font-size:7.5px}
+}
 </style>
 </head>
 <body>
 <div class="app-bg"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="noise"></div></div>
 <div id="pointer-glow" class="pointer-glow"></div>
-<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">✦</div><div class="brand-copy"><div class="brand-title">학교 생활 기록실</div><div class="brand-sub">급식 · 시간표 · 학사일정</div></div></div><div class="top-actions"><button class="icon-btn" title="오늘" onclick="goToday()">⌂</button><button class="icon-btn" title="학교 변경" onclick="changeSchoolInfo()">↻</button></div></div></header>
-<main class="page">
-<section id="wizard-container" class="wizard-wrap"><div class="wizard"><div class="wizard-top"><div><div class="eyebrow">THE SCHOOL ARCHIVE</div><div class="wizard-title">학교 생활을 펼쳐보자.</div><div class="wizard-note">교육청과 학교를 한 번만 지정하면 급식, 시간표, 학사일정을 한 화면에서 볼 수 있습니다.</div></div><div id="step-count" class="step-count">01 / 02</div></div><div class="wizard-body"><div class="progress"><span id="indicator-1" class="active"></span><span id="indicator-2"></span></div><div id="step-1"><label class="field-label">학교가 속한 교육청</label><button id="office-picker-btn" class="picker" onclick="openOfficePicker()"><span id="office-selected-text">교육청을 선택하세요</span><span>⌄</span></button><div style="height:10px"></div><button class="primary" onclick="nextStep()">다음 단계</button></div><div id="step-2" class="hidden"><label class="field-label">학교 검색</label><input id="school-input" class="input" autocomplete="off" placeholder="예: 서울고등학교, 세종고등학교"><div id="school-results" class="school-results hidden"></div><div style="height:12px"></div><div style="display:grid;grid-template-columns:120px 1fr;gap:8px"><button class="secondary" onclick="prevStep()">이전</button><button id="search-trigger-btn" class="primary" disabled onclick="triggerSearch()">학교 불러오기</button></div></div></div></div></section>
-<div id="dashboard-scroll-rail" class="scroll-rail"><div class="scroll-track"></div><div id="dashboard-scroll-thumb" class="scroll-thumb"></div></div>
-<div id="main-scroll" class="main-scroll">
-<section id="result-container" class="dashboard hidden">
-<div class="school-header"><div class="school-meta"><div class="school-symbol">⌘</div><div><div id="selected-school-badge" class="eyebrow">SCHOOL ARCHIVE</div><div id="result-school-title" class="school-name">학교명</div><div id="result-school-detail" class="school-detail">교육청 · 학교급</div></div></div><div class="header-actions"><button class="small-btn" onclick="openAiModal()">✦ 대마법사에게 묻기</button><button class="small-btn" onclick="changeSchoolInfo()">학교 바꾸기</button></div></div>
-<div class="section-block"><div class="section-kicker"><div><div class="section-title">오늘의 급식</div><div class="section-sub">오늘 가장 먼저 필요한 정보.</div></div><div class="section-side"><span class="section-index">01</span><button class="small-btn" onclick="reloadDashboard()">↻ 새로고침</button></div></div><div class="today-grid">
-<article class="card today-card" id="today-card"><div class="date-row"><div><div id="today-date-str" class="date-big">날짜를 불러오는 중</div><div id="today-day-label" class="date-small">—</div></div><div class="today-tag">TODAY</div></div><div class="menu-heading">LUNCH MENU</div><div id="today-menu-content" class="menu-list"><span class="loading">급식 정보를 불러오는 중...</span></div><div class="calorie"><div class="calorie-label">오늘 중식 기준 열량</div><div id="today-cal-badge" class="calorie-value">—</div></div></article>
-<aside class="card ai-card"><div><div class="ai-top"><div><div class="ai-label">WIZARD'S NOTE</div><div class="ai-title">오늘의 한 줄 예언</div></div><div class="ai-mark">✦</div></div><div id="ai-insight-text" class="ai-copy">오늘의 식단을 확인하면 대마법사가 한 줄을 남겨드립니다.</div></div><div class="ai-footer"><span class="ai-footer-note">메뉴를 읽고 가볍게 해석합니다.</span><button class="ai-button" onclick="openAiModal()">전체 리포트 →</button></div></aside>
-</div></div>
-<div class="week-wrap"><div class="section-kicker"><div><div class="section-title">이번 주</div><div class="section-sub">날짜를 누르면 오늘의 카드가 바뀝니다.</div></div><div class="section-side"><span class="section-index">02</span><button class="icon-btn" onclick="scrollWeekly(-360)">←</button><button class="icon-btn" onclick="scrollWeekly(360)">→</button></div></div><div class="card week-card"><div id="weekly-horizontal-container" class="week-scroller"></div></div></div>
-<div class="section-block school-life"><div class="section-kicker"><div><div class="section-title">학교 생활</div><div class="section-sub">아래로 내려가면 학사일정과 시간표를 더 넓게 볼 수 있습니다.</div></div><div class="section-side"><span class="section-index">03</span><div id="data-status" class="data-status">READY</div></div></div><div class="planner-grid">
-<article class="card schedule-card"><div class="card-head"><div><h3>학사 일정</h3><p>시험 · 방학 · 행사 · 재량휴업일</p></div><div class="month-nav"><button class="nav-btn" onclick="moveScheduleMonth(-1)">←</button><div id="schedule-month-label" class="month-label">—</div><button class="nav-btn" onclick="moveScheduleMonth(1)">→</button></div></div><div id="schedule-list" class="schedule-list"><div class="loading">학사일정을 불러오는 중...</div></div><button class="more-btn" onclick="openScheduleModal()">이 달의 일정 전체 보기</button></article>
-<article class="card timetable-card"><div class="card-head"><div><h3>오늘의 시간표</h3><p>학년 · 반을 선택하면 나이스 시간표를 조회합니다.</p></div></div><div class="timetable-controls"><select id="grade-select" class="control" onchange="loadTimetable()"></select><select id="class-select" class="control" onchange="loadTimetable()"></select></div><div id="timetable-container" class="timetable-scroll"><div class="empty">학년과 반을 선택해주세요.</div></div></article>
-</div></div>
-</section>
-</div></main>
-<div id="office-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'office-modal')"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div class="modal-title">교육청 선택</div><button class="icon-btn" onclick="closeOfficePicker()">×</button></div><div class="modal-body"><div id="office-list-container" class="office-grid"></div></div></div></div>
-<div id="schedule-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'schedule-modal')"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div><div class="modal-title">학사 일정</div><div id="schedule-modal-sub" style="font-size:9px;color:#8b97aa;margin-top:3px">—</div></div><button class="icon-btn" onclick="closeScheduleModal()">×</button></div><div id="schedule-modal-content" class="modal-body"></div></div></div>
-<div id="ai-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'ai-modal')"><div class="modal"><div class="modal-head"><div><div class="modal-title">대마법사의 급식 연구실</div><div style="font-size:9px;color:#8b97aa;margin-top:3px">오늘의 식단을 소재로 한 가벼운 AI 해석</div></div><button class="icon-btn" onclick="closeAiModal()">×</button></div><div id="ai-modal-content" class="modal-body"><div class="loading">수정구슬을 준비하는 중...</div></div><div class="modal-footer"><div class="chat-row"><input id="ai-chat-input" class="input" placeholder="예: 오늘 메뉴에서 눈여겨볼 음식은?" onkeydown="if(event.key==='Enter')sendAiChat()"><button class="primary" style="width:auto;white-space:nowrap;padding:10px 15px" onclick="sendAiChat()">질문</button></div></div></div></div>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">✦</div>
+        <div class="brand-info">
+          <div class="brand-title">학교 생활 기록실</div>
+          <div class="brand-sub">급식 · 시간표 · 학사일정</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="small-btn top-today" onclick="goToday()" title="오늘로 이동">오늘</button>
+        <button class="icon-btn" onclick="goToday()" title="오늘로">⌂</button>
+        <button class="icon-btn" onclick="reloadCurrentTab()" title="새로고침">↻</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="setup-container" class="content hidden"></div>
+
+  <div id="dashboard-container" class="content hidden">
+    <div class="view-mode-standalone">
+      <button id="view-mode-button" class="view-mode-button" onclick="toggleViewMode()" aria-label="보기 방식 전환">
+        <span class="view-mode-icon">✦</span>
+        <span class="view-mode-copy">
+          <strong>정보가 복잡하다면? 대마법사에게 물어보기</strong>
+          <small>급식 · 하루 시간표 · 학사일정을 한 번에 물어볼 수 있어요.</small>
+        </span>
+        <span class="view-mode-arrow">›</span>
+      </button>
+    </div>
+    <div id="direct-view" class="view-shell">
+      <main id="main-scroll" class="main-scroll">
+        <div class="school-strip">
+          <div class="school-meta">
+            <div class="school-symbol">⌘</div>
+            <div style="min-width:0">
+              <div class="eyebrow">SCHOOL ARCHIVE</div>
+              <div id="school-title" class="school-name">학교명</div>
+              <div id="school-detail" class="school-detail">교육청 · 학교급 · 학년 · 반</div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="small-btn" onclick="changeSchoolInfo()">정보 바꾸기</button>
+          </div>
+        </div>
+
+        <section id="tab-meal" class="tab-panel active"></section>
+        <section id="tab-timetable" class="tab-panel"></section>
+        <section id="tab-schedule" class="tab-panel"></section>
+      </main>
+
+      <div class="tabbar-zone">
+        <nav class="tabbar" aria-label="주요 메뉴">
+          <button id="tab-btn-meal" class="tab active" onclick="switchTab('meal')"><div class="tab-icon">▤</div><div class="tab-label">급식</div></button>
+          <button id="tab-btn-timetable" class="tab" onclick="switchTab('timetable')"><div class="tab-icon">◫</div><div class="tab-label">하루 시간표</div></button>
+          <button id="tab-btn-schedule" class="tab" onclick="switchTab('schedule')"><div class="tab-icon">◷</div><div class="tab-label">학사일정</div></button>
+        </nav>
+      </div>
+    </div>
+
+    <section id="ai-view" class="ai-view hidden">
+      <div class="ai-view-head">
+        <div>
+          <div class="ai-view-kicker">THE GRAND WIZARD</div>
+          <div class="ai-view-title">학교 생활의 모든 것을 물어보세요.</div>
+          <div class="ai-view-sub">지금 저장된 급식 · 시간표 · 학사일정을 바탕으로 대답합니다.</div>
+        </div>
+        <div class="ai-live-pill"><span></span> 기록 연결됨</div>
+      </div>
+      <div id="ai-chat-scroll" class="ai-chat-scroll">
+        <div id="ai-chat-log" class="ai-chat-log"></div>
+      </div>
+      <div class="ai-composer">
+        <div class="ai-composer-inner">
+          <input id="ai-chat-input" class="ai-chat-input" placeholder="예: 이번 주에 중요한 일정이 뭐야?" autocomplete="off">
+          <button id="ai-chat-send" class="chat-send" onclick="sendAiChat()">보내기</button>
+        </div>
+        <div class="ai-composer-hint">급식, 시간표, 학사일정에 대해 자유롭게 물어보세요.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Modals -->
+<div id="office-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'office-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head"><div class="modal-title">교육청 선택</div><button class="icon-btn" onclick="closeOfficePicker()">×</button></div>
+    <div class="modal-body"><div id="office-list-container" class="office-grid"></div></div>
+  </div>
+</div>
+
+<div id="class-picker-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'class-picker-modal')">
+  <div class="modal class-modal" onclick="event.stopPropagation()">
+    <div class="modal-head"><div><div class="modal-title">학급 선택</div><div style="font-size:9px;color:#8b97aa;margin-top:3px">학년과 반을 골라 기록실에 저장하세요.</div></div><button class="icon-btn" onclick="closeClassPicker()">×</button></div>
+    <div class="modal-body">
+      <div class="class-picker-grid">
+        <section class="class-picker-pane"><div class="class-picker-pane-title">학년</div><div id="grade-picker-list" class="class-picker-list"></div></section>
+        <section class="class-picker-pane"><div class="class-picker-pane-title">반</div><div id="class-picker-list" class="class-picker-list"></div></section>
+      </div>
+      <div class="class-modal-note">학년을 먼저 고르고 반을 선택하면 아래 선택 완료 버튼으로 저장됩니다.</div>
+    </div>
+    <div class="class-modal-footer"><button class="secondary small-class-cancel" onclick="closeClassPicker()">취소</button><button id="class-picker-done" class="primary" style="width:180px" onclick="confirmClassPicker()">선택 완료</button></div>
+  </div>
+</div>
+
+<div id="schedule-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'schedule-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head"><div><div class="modal-title">학사 일정 전체 보기</div><div id="schedule-modal-sub" style="font-size:9px;color:#8b97aa;margin-top:3px">—</div></div><button class="icon-btn" onclick="closeScheduleModal()">×</button></div>
+    <div id="schedule-modal-content" class="modal-body"></div>
+  </div>
+</div>
+
 <script>
-/* ============================================================
-   1. CONFIG
-   ============================================================ */
-// 원본 파일의 키를 그대로 사용한 로컬 실험용 버전입니다.
-// 배포용으로 만들 생각이 없다면 이 구조 그대로 두어도 됩니다.
-const NEIS_API_KEY = ['19817fd7','016846ae','ad2e6cad','dc317227'].join('');
-const GEMINI_API_KEY = ['AQ.Ab8RN6IrNCPIDKCsw2wUtDIUUqU3hcUFdqHfzhvusMma6He','-aQ'].join('');
-const NEIS_BASE = 'https://open.neis.go.kr/hub';
-
-const offices = [
-    {name:'서울특별시교육청', code:'B10'}, {name:'부산광역시교육청', code:'C10'},
-    {name:'대구광역시교육청', code:'D10'}, {name:'인천광역시교육청', code:'E10'},
-    {name:'광주광역시교육청', code:'F10'}, {name:'대전광역시교육청', code:'G10'},
-    {name:'울산광역시교육청', code:'H10'}, {name:'세종특별자치시교육청', code:'I10'},
-    {name:'경기도교육청', code:'J10'}, {name:'강원특별자치도교육청', code:'K10'},
-    {name:'충청북도교육청', code:'M10'}, {name:'충청남도교육청', code:'N10'},
-    {name:'전북특별자치도교육청', code:'P10'}, {name:'전라남도교육청', code:'Q10'},
-    {name:'경상북도교육청', code:'R10'}, {name:'경상남도교육청', code:'S10'},
-    {name:'제주특별자치도교육청', code:'T10'}
-];
-
-const state = {
-    officeCode:'', officeName:'', schoolCode:'', schoolName:'', schoolKind:'',
-    schoolData:null, mealRows:[], scheduleRows:[], timetableRows:[],
-    selectedDate: todayDate(), scheduleMonth: new Date(), todayMenuText:'', todayCalInfo:'',
-    timetableRequestKey:'',
+/* ======================== CONFIG ======================== */
+// API 키는 소스에 평문으로 두지 않고, 페이지 로드 후 Web Crypto로 복호화한다.
+// (브라우저에서 실행되는 HTML인 만큼 '보안 저장소'가 아니라 소스 노출을 줄이는 목적의 암호화/난독화다.)
+const ENCRYPTED_API_BUNDLE={
+  salt:'rk7bsG3DCEMiYM+O82nZww==',
+  iv:'AvuWAaDUrW5Vb7fv',
+  data:'ouAEFNlMVHFX4RYnmAon6v2GMdKT5ji97Yz4FdrlscmRxoE8qqK9E5zC7VTw0mF4f3JE5k70gGmf8AYnBA6+E93StW4BcPhMnL+Gj+agV1cw/ViVgVhcuwGhoB3837iUfGmcu5IzaPMv18zfX9erPG+7JsnrAM0cIRBdUQ==',
+  iterations:120000,
+  passphrase:['LQG-iOS-','2026-sch','ool-arch','ive-seed-9f3c'].join('')
 };
+let API_KEYS=null;
+const NEIS_BASE='https://open.neis.go.kr/hub';
+function b64ToBytes(v){const bin=atob(v);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
+async function getApiKeys(){
+  if(API_KEYS)return API_KEYS;
+  try{
+    const pass=new TextEncoder().encode(ENCRYPTED_API_BUNDLE.passphrase);
+    const material=await crypto.subtle.importKey('raw',pass,'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64ToBytes(ENCRYPTED_API_BUNDLE.salt),iterations:ENCRYPTED_API_BUNDLE.iterations,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['decrypt']);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64ToBytes(ENCRYPTED_API_BUNDLE.iv)},key,b64ToBytes(ENCRYPTED_API_BUNDLE.data));
+    API_KEYS=JSON.parse(new TextDecoder().decode(plain));
+    return API_KEYS;
+  }catch(err){
+    console.error('API 키 복호화 실패',err);
+    throw new Error('API 설정을 불러오지 못했습니다.');
+  }
+}
+const offices=[
+ {name:'서울특별시교육청',code:'B10'},{name:'부산광역시교육청',code:'C10'},{name:'대구광역시교육청',code:'D10'},
+ {name:'인천광역시교육청',code:'E10'},{name:'광주광역시교육청',code:'F10'},{name:'대전광역시교육청',code:'G10'},
+ {name:'울산광역시교육청',code:'H10'},{name:'세종특별자치시교육청',code:'I10'},{name:'경기도교육청',code:'J10'},
+ {name:'강원특별자치도교육청',code:'K10'},{name:'충청북도교육청',code:'M10'},{name:'충청남도교육청',code:'N10'},
+ {name:'전북특별자치도교육청',code:'P10'},{name:'전라남도교육청',code:'Q10'},{name:'경상북도교육청',code:'R10'},
+ {name:'경상남도교육청',code:'S10'},{name:'제주특별자치도교육청',code:'T10'}
+];
+const state={
+ officeCode:'',officeName:'',schoolCode:'',schoolName:'',schoolKind:'',schoolData:null,grade:'',className:'',
+ mealRows:[],scheduleRows:[],scheduleMonth:new Date(),selectedMealDate:todayDate(),selectedTimetableDate:todayDate(),
+ timetableCache:{},currentTab:'meal',currentView:'direct',todayMenuText:'',todayCalInfo:'',aiLastReport:'',aiChatHistory:[],aiBusy:false,setupStep:1,aiLastError:'',aiQuickInsightCache:{},aiQuickInsightKey:'',aiQuickInsightPending:null
+};
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function pad(n){return String(n).padStart(2,'0')}
+function ymd(d){return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`}
+function fromYmd(v){return new Date(Number(v.slice(0,4)),Number(v.slice(4,6))-1,Number(v.slice(6,8)))}
+function todayDate(){const d=new Date();d.setHours(0,0,0,0);return d}
+function fmtLong(d){return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`}
+function fmtMonth(d){return `${d.getFullYear()}년 ${d.getMonth()+1}월`}
+function weekday(d){return ['일','월','화','수','목','금','토'][d.getDay()]}
+function shortDate(d){return `${d.getMonth()+1}/${d.getDate()}`}
+function isSameDay(a,b){return ymd(a)===ymd(b)}
+function htmlMenu(text){return String(text||'').split('<br/>').map(v=>v.replace(/\([0-9\.]+\)/g,'').replace(/<[^>]+>/g,'').trim()).filter(Boolean)}
+function cleanHtmlText(text){return String(text||'').replace(/<br\s*\/?\>/gi,'\n').replace(/<[^>]+>/g,'').trim()}
+function showToast(message){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),2600)}
+function setLoading(el,text='불러오는 중...'){el.innerHTML=`<div class="loading"><div><div class="spinner"></div>${esc(text)}</div></div>`}
+function gradeOptions(){const kind=state.schoolKind||'';return kind.includes('초등')?Array.from({length:6},(_,i)=>i+1):Array.from({length:3},(_,i)=>i+1)}
+function normClass(v){return String(v??'').replace(/\s+/g,'').replace(/반$/,'')}
+function saveProfile(){
+  const pairs={neis_office_code:state.officeCode,neis_office_name:state.officeName,neis_school_code:state.schoolCode,neis_school_name:state.schoolName,neis_school_kind:state.schoolKind,neis_grade:state.grade,neis_class:state.className};
+  Object.entries(pairs).forEach(([k,v])=>localStorage.setItem(k,v??''));
+}
+function clearSchoolProfile(){['neis_office_code','neis_office_name','neis_school_code','neis_school_name','neis_school_kind','neis_grade','neis_class'].forEach(k=>localStorage.removeItem(k))}
 
-/* ============================================================
-   2. HELPERS
-   ============================================================ */
-const $ = id => document.getElementById(id);
-const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-function pad(n){ return String(n).padStart(2,'0'); }
-function ymd(date){ return `${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}`; }
-function fromYmd(v){ return new Date(Number(v.slice(0,4)), Number(v.slice(4,6))-1, Number(v.slice(6,8))); }
-function todayDate(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
-function fmtLong(date){ return `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일`; }
-function fmtMonth(date){ return `${date.getFullYear()}년 ${date.getMonth()+1}월`; }
-function weekday(date){ return ['일','월','화','수','목','금','토'][date.getDay()]; }
-function isSameDay(a,b){ return ymd(a) === ymd(b); }
-function htmlMenu(text){
-    return String(text || '').split('<br/>').map(v => v.replace(/\([0-9\.]+\)/g,'').replace(/<[^>]+>/g,'').trim()).filter(Boolean);
+/* ======================== NEIS ======================== */
+async function neis(endpoint,params={}){
+  const keys=await getApiKeys();
+  const qs=new URLSearchParams({KEY:keys.neis,Type:'json',pIndex:'1',pSize:'1000',...params});
+  const r=await fetch(`${NEIS_BASE}/${endpoint}?${qs.toString()}`);if(!r.ok)throw new Error(`NEIS HTTP ${r.status}`);
+  const data=await r.json();if(data.RESULT?.CODE&&data.RESULT.CODE!=='INFO-000')throw new Error(data.RESULT.MESSAGE||data.RESULT.CODE);return data;
 }
-function cleanHtmlText(text){ return String(text || '').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').trim(); }
-function lastDayOfMonth(year, monthIndex){ return new Date(year, monthIndex+1, 0).getDate(); }
-function showToast(message){
-    document.querySelector('.toast')?.remove();
-    const el = document.createElement('div'); el.className='toast'; el.textContent=message; document.body.appendChild(el);
-    setTimeout(()=>el.remove(),2600);
-}
-function setStatus(text){ $('data-status').textContent=text; }
-function setLoading(el, text='불러오는 중...'){ el.innerHTML=`<div class="loading">${esc(text)}</div>`; }
+function extractRows(data,dataset){const block=data?.[dataset];if(!block)return [];if(Array.isArray(block)&&block[1]?.row)return block[1].row;return block.row||[]}
 
-async function neis(endpoint, params={}){
-    const qs = new URLSearchParams({KEY:NEIS_API_KEY, Type:'json', pIndex:'1', pSize:'1000', ...params});
-    const response = await fetch(`${NEIS_BASE}/${endpoint}?${qs.toString()}`);
-    if(!response.ok) throw new Error(`NEIS HTTP ${response.status}`);
-    const data = await response.json();
-    if(data.RESULT?.CODE && data.RESULT.CODE !== 'INFO-000') throw new Error(data.RESULT.MESSAGE || data.RESULT.CODE);
-    return data;
+/* ======================== INIT ======================== */
+window.addEventListener('DOMContentLoaded',init);
+async function init(){
+  initOfficeList();
+  $('ai-chat-input')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendAiChat()}});
+  window.addEventListener('mousemove',e=>{const g=$('pointer-glow');g.style.left=e.clientX+'px';g.style.top=e.clientY+'px'});
+  const saved={officeCode:localStorage.getItem('neis_office_code')||'',officeName:localStorage.getItem('neis_office_name')||'',schoolCode:localStorage.getItem('neis_school_code')||'',schoolName:localStorage.getItem('neis_school_name')||'',schoolKind:localStorage.getItem('neis_school_kind')||'',grade:localStorage.getItem('neis_grade')||'',className:localStorage.getItem('neis_class')||''};
+  Object.assign(state,saved);
+  if(saved.officeCode&&saved.schoolCode&&saved.grade&&saved.className){state.schoolData={SCHUL_KND_SC_NM:state.schoolKind};await bootDashboard();}
+  else {showSetup(getSetupStep());}
+  document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(document.activeElement?.tagName))return;const s=$('main-scroll');if(!s)return;if(e.key==='PageDown'){e.preventDefault();s.scrollBy({top:Math.max(360,s.clientHeight*.82),behavior:'smooth'})}if(e.key==='PageUp'){e.preventDefault();s.scrollBy({top:-Math.max(360,s.clientHeight*.82),behavior:'smooth'})}});
 }
-function extractRows(data, dataset){
-    const block = data?.[dataset];
-    if(!block) return [];
-    if(Array.isArray(block) && block[1]?.row) return block[1].row;
-    return block.row || [];
-}
-
-/* ============================================================
-   3. INIT / LOCAL STORAGE
-   ============================================================ */
-window.addEventListener('DOMContentLoaded', init);
-window.addEventListener('DOMContentLoaded', ()=>setupCustomScroll());
-function init(){
-    initOfficeList();
-    $('school-input').addEventListener('input', onSchoolInput);
-    const saved = {
-        officeCode:localStorage.getItem('neis_office_code'), officeName:localStorage.getItem('neis_office_name'),
-        schoolCode:localStorage.getItem('neis_school_code'), schoolName:localStorage.getItem('neis_school_name'),
-        schoolKind:localStorage.getItem('neis_school_kind')
-    };
-    if(saved.officeCode && saved.schoolCode){
-        Object.assign(state, saved);
-        state.schoolData = {SCHUL_KND_SC_NM:saved.schoolKind || ''};
-        bootDashboard().catch(err => { console.error(err); showToast('저장된 학교 데이터를 불러오지 못했습니다.'); resetWizard(); });
-    } else {
-        $('wizard-container').classList.remove('hidden');
-        $('result-container').classList.add('hidden');
-    }
-    window.addEventListener('mousemove', e=>{
-        const glow=$('pointer-glow'); glow.style.left=e.clientX+'px'; glow.style.top=e.clientY+'px';
-    });
-}
-
-/* ============================================================
-   4. WIZARD / SCHOOL SEARCH
-   ============================================================ */
 function initOfficeList(){
-    const container=$('office-list-container'); container.innerHTML='';
-    offices.forEach(o=>{
-        const btn=document.createElement('button'); btn.className='office-option'; btn.innerHTML=`<strong>${esc(o.name)}</strong><span style="display:block;margin-top:3px;font-size:10px;color:#747c85">${o.code}</span>`;
-        btn.onclick=()=>selectOffice(o); container.appendChild(btn);
-    });
+  const c=$('office-list-container');c.innerHTML='';
+  offices.forEach(o=>{const b=document.createElement('button');b.className='office-option';b.innerHTML=`<strong>${esc(o.name)}</strong><span style="display:block;margin-top:3px;font-size:9px;color:#98a2b2">${o.code}</span>`;b.onclick=()=>{state.officeCode=o.code;state.officeName=o.name;closeOfficePicker();renderSetup();};c.appendChild(b)});
 }
-function openOfficePicker(){ $('office-modal').classList.remove('hidden'); }
-function closeOfficePicker(){ $('office-modal').classList.add('hidden'); }
-function selectOffice(o){
-    state.officeCode=o.code; state.officeName=o.name;
-    $('office-selected-text').textContent=o.name;
-    $('office-selected-text').style.color='#f5f6f7';
-    closeOfficePicker();
+
+/* ======================== SETUP WIZARD ======================== */
+function getSetupStep(){
+  if(!state.officeCode)return 1;
+  if(!state.schoolCode)return 2;
+  if(!state.grade||!state.className)return 3;
+  return 3;
 }
-function nextStep(){
-    if(!state.officeCode){ showToast('먼저 교육청을 선택해주세요.'); return; }
-    $('step-1').classList.add('hidden'); $('step-2').classList.remove('hidden');
-    $('indicator-1').classList.add('active'); $('indicator-2').classList.add('active'); $('step-count').textContent='02 / 02';
-    setTimeout(()=>$('school-input').focus(),100);
+function showSetup(step=getSetupStep()){
+  state.setupStep=Math.max(1,Math.min(3,step));
+  $('dashboard-container').classList.add('hidden');$('setup-container').classList.remove('hidden');renderSetup();
 }
-function prevStep(){
-    $('step-2').classList.add('hidden'); $('step-1').classList.remove('hidden'); $('indicator-2').classList.remove('active'); $('step-count').textContent='01 / 02';
+function renderSetup(){
+  const el=$('setup-container');const step=state.setupStep||getSetupStep();
+  const stepTitle=['','교육청은 어디야?','어느 학교에 다녀?','몇 학년 몇 반이야?'][step];
+  const stepCopy=['','지역 교육청을 선택하면 학교 검색을 시작할 수 있어요.','학교 이름을 검색하고 정확한 학교를 하나 골라주세요.','이 정보는 시간표를 불러오는 데 사용돼요.'][step];
+  const gradeOpts=gradeOptions().map(g=>`<option value="${g}" ${String(state.grade)===String(g)?'selected':''}>${g}학년</option>`).join('');
+  const classOpts=Array.from({length:40},(_,i)=>i+1).map(g=>`<option value="${g}" ${String(state.className)===String(g)?'selected':''}>${g}반</option>`).join('');
+  const dots=[1,2,3].map(i=>`<div class="step-dot ${i<=step?'active':''}">${i}</div>${i<3?'<div class="step-line"></div>':''}`).join('');
+  let body='';
+  if(step===1){
+    body=`
+      <div class="setup-question">${esc(stepTitle)}</div>
+      <div class="setup-step-sub">${esc(stepCopy)}</div>
+      <div class="office-options">${offices.map(o=>`<button class="office-option ${state.officeCode===o.code?'selected':''}" onclick="chooseOffice('${o.code}','${esc(o.name).replace(/'/g,'&#39;')}')"><span><strong>${esc(o.name)}</strong><small>${o.code}</small></span><b>${state.officeCode===o.code?'✓':'›'}</b></button>`).join('')}</div>
+      <div class="setup-actions single"><button id="office-next" class="primary" ${state.officeCode?'':'disabled'} onclick="nextSetupStep()">다음</button></div>`;
+  } else if(step===2){
+    body=`
+      <div class="setup-picked glass"><span class="setup-picked-label">선택한 교육청</span><strong>${esc(state.officeName)}</strong><button class="small-btn" onclick="showSetup(1)">바꾸기</button></div>
+      <div class="setup-question">${esc(stepTitle)}</div>
+      <div class="setup-step-sub">${esc(stepCopy)}</div>
+      <div class="field setup-focus-field"><label class="field-label">학교 이름</label><input id="school-input" class="input big-input" autocomplete="off" value="${esc(state.schoolName||'')}" placeholder="학교 이름을 입력하세요"><div id="school-results" class="school-results hidden"></div></div>
+      <div class="setup-actions"><button class="secondary" onclick="showSetup(1)">이전</button><button id="school-next" class="primary" ${state.schoolCode?'':'disabled'} onclick="nextSetupStep()">다음</button></div>`;
+  } else {
+    body=`
+      <div class="setup-picked glass"><span class="setup-picked-label">선택한 학교</span><strong>${esc(state.schoolName)}</strong><small>${esc(state.officeName)} · ${esc(state.schoolKind||'학교')}</small><button class="small-btn" onclick="showSetup(2)">바꾸기</button></div>
+      <div class="setup-question">${esc(stepTitle)}</div>
+      <div class="setup-step-sub">${esc(stepCopy)}</div>
+      <div class="field setup-focus-field"><label class="field-label">학급</label><button type="button" class="class-picker-trigger" onclick="openClassPicker()"><span><span class="class-picker-kicker">MY CLASS</span><span class="class-picker-value">${state.grade&&state.className?`${esc(state.grade)}학년 ${esc(state.className)}반`:'학년과 반을 선택하세요'}</span><span class="class-picker-sub">선택하면 시간표 조회에 사용됩니다.</span></span><span class="class-picker-arrow">›</span></button></div>
+      <div class="setup-actions"><button class="secondary" onclick="showSetup(2)">이전</button><button id="setup-save-btn" class="primary" ${state.grade&&state.className?'':'disabled'} onclick="finishSetup()">이 학교로 시작하기</button></div>`;
+  }
+  el.innerHTML=`<div class="setup-container-shell"><div class="setup-shell"><div class="setup-card glass"><div class="setup-top"><div class="setup-kicker">THE SCHOOL ARCHIVE</div><div class="setup-title">처음 한 번만 정하면 돼.</div><div class="setup-copy">교육청 → 학교 → 학급 순서로 하나씩 설정하고, 다음부터는 바로 앱으로 들어갈 수 있어요.</div></div><div class="setup-body"><div class="stepper">${dots}</div>${body}<div class="setup-reset-row"><button class="ghost-link" onclick="clearSchoolProfile();showSetup(1)">처음부터 다시 설정</button></div></div></div></div></div>`;
+  if(step===2){
+    $('school-input').addEventListener('input',onSchoolInput);
+    $('school-input').addEventListener('focus',()=>{if($('school-input').value.trim().length>=2)fetchSchools($('school-input').value.trim())});
+  }
+  updateSetupButton();
 }
-let schoolSearchTimer=null;
-function onSchoolInput(e){
-    const q=e.target.value.trim();
-    $('search-trigger-btn').disabled=true;
-    $('school-results').classList.add('hidden');
-    clearTimeout(schoolSearchTimer);
-    if(q.length<2) return;
-    schoolSearchTimer=setTimeout(()=>fetchSchools(q),350);
+function openClassPicker(){
+  renderClassPicker();
+  $('class-picker-modal').classList.remove('hidden');
+  setTimeout(()=>document.querySelector('#grade-picker-list .class-pick-option.active')?.scrollIntoView({block:'center',behavior:'smooth'}),20);
 }
+function closeClassPicker(){$('class-picker-modal').classList.add('hidden')}
+function renderClassPicker(){
+  const gradeBox=$('grade-picker-list'),classBox=$('class-picker-list');if(!gradeBox||!classBox)return;
+  gradeBox.innerHTML=gradeOptions().map(g=>`<button class="class-pick-option ${String(state.grade)===String(g)?'active':''}" onclick="pickGrade('${g}')"><span>${g}학년</span><b>${String(state.grade)===String(g)?'✓':'›'}</b></button>`).join('');
+  const classes=Array.from({length:40},(_,i)=>i+1);
+  classBox.innerHTML=classes.map(c=>`<button class="class-pick-option ${String(state.className)===String(c)?'active':''}" onclick="pickClass('${c}')"><span>${c}반</span><b>${String(state.className)===String(c)?'✓':'›'}</b></button>`).join('');
+  const done=$('class-picker-done');if(done)done.disabled=!(state.grade&&state.className);
+}
+function pickGrade(value){state.grade=String(value);saveProfile();renderClassPicker();updateSetupButton()}
+function pickClass(value){state.className=String(value);saveProfile();renderClassPicker();updateSetupButton();}
+function confirmClassPicker(){if(!(state.grade&&state.className)){showToast('학년과 반을 모두 선택해주세요.');return}saveProfile();closeClassPicker();renderSetup()}
+
+function chooseOffice(code,name){state.officeCode=code;state.officeName=name;state.schoolCode='';state.schoolName='';state.schoolKind='';state.schoolData=null;state.grade='';state.className='';saveProfile();renderSetup();}
+function nextSetupStep(){
+  if(state.setupStep===1&&!state.officeCode){showToast('교육청을 먼저 선택해주세요.');return}
+  if(state.setupStep===2&&!state.schoolCode){showToast('학교를 검색해서 하나 선택해주세요.');return}
+  state.setupStep=Math.min(3,state.setupStep+1);renderSetup();
+}
+function updateSetupButton(){
+  const b=$('setup-save-btn');if(b)b.disabled=!(state.grade&&state.className);
+  const o=$('office-next');if(o)o.disabled=!state.officeCode;
+  const s=$('school-next');if(s)s.disabled=!state.schoolCode;
+}
+function openOfficePicker(){$('office-modal').classList.remove('hidden')}
+function closeOfficePicker(){$('office-modal').classList.add('hidden')}
+let searchTimer=null;
+function onSchoolInput(e){const q=e.target.value.trim();state.schoolCode='';state.schoolName='';state.schoolKind='';saveProfile();updateSetupButton();$('school-results').classList.add('hidden');clearTimeout(searchTimer);if(q.length<2)return;searchTimer=setTimeout(()=>fetchSchools(q),300)}
 async function fetchSchools(query){
-    const result=$('school-results'); result.classList.remove('hidden'); setLoading(result,'학교 목록을 찾는 중...');
-    try{
-        const data=await neis('schoolInfo',{ATPT_OFCDC_SC_CODE:state.officeCode,SCHUL_NM:query,pSize:'30'});
-        const rows=extractRows(data,'schoolInfo');
-        if(!rows.length){ result.innerHTML='<div class="empty">검색 결과가 없습니다.</div>'; return; }
-        result.innerHTML='';
-        rows.forEach(s=>{
-            const item=document.createElement('button'); item.className='school-item';
-            item.innerHTML=`<strong>${esc(s.SCHUL_NM)}</strong><small>${esc(s.ORG_RDNMA || '')} · ${esc(s.SCHUL_KND_SC_NM || '')}</small>`;
-            item.onclick=()=>selectSchool(s); result.appendChild(item);
-        });
-    }catch(err){ console.error(err); result.innerHTML='<div class="empty">학교 검색에 실패했습니다. 잠시 후 다시 시도해주세요.</div>'; }
+  const box=$('school-results');box.classList.remove('hidden');setLoading(box,'학교 목록을 찾는 중...');
+  try{const data=await neis('schoolInfo',{ATPT_OFCDC_SC_CODE:state.officeCode,SCHUL_NM:query,pSize:'30'});const rows=extractRows(data,'schoolInfo');if(!rows.length){box.innerHTML='<div class="empty">검색 결과가 없습니다.</div>';return}
+    box.innerHTML='';rows.forEach(s=>{const b=document.createElement('button');b.className='school-item';b.innerHTML=`<strong>${esc(s.SCHUL_NM)}</strong><small>${esc(s.ORG_RDNMA||'')} · ${esc(s.SCHUL_KND_SC_NM||'')}</small>`;b.onclick=()=>selectSchool(s);box.appendChild(b)});
+  }catch(e){console.error(e);box.innerHTML='<div class="empty">학교 검색에 실패했습니다.</div>'}
 }
 function selectSchool(s){
-    state.schoolCode=s.SD_SCHUL_CODE; state.schoolName=s.SCHUL_NM; state.schoolKind=s.SCHUL_KND_SC_NM || '';
-    state.schoolData=s;
-    $('school-input').value=s.SCHUL_NM; $('school-results').classList.add('hidden'); $('search-trigger-btn').disabled=false;
+  state.schoolCode=s.SD_SCHUL_CODE;state.schoolName=s.SCHUL_NM;state.schoolKind=s.SCHUL_KND_SC_NM||'';state.schoolData=s;state.grade='';state.className='';state.setupStep=3;saveProfile();
+  const input=$('school-input');if(input)input.value=s.SCHUL_NM;const box=$('school-results');if(box)box.classList.add('hidden');updateSetupButton();
+  renderSetup();
 }
-async function triggerSearch(){
-    if(!state.schoolCode){ showToast('검색 결과에서 학교를 선택해주세요.'); return; }
-    await bootDashboard();
+function finishSetup(){
+  if(!(state.officeCode&&state.schoolCode&&state.grade&&state.className)){showToast('교육청 · 학교 · 학급 정보를 모두 선택해주세요.');return}
+  saveProfile();bootDashboard();
 }
+function changeSchoolInfo(){state.officeCode='';state.officeName='';state.schoolCode='';state.schoolName='';state.schoolKind='';state.schoolData=null;state.grade='';state.className='';clearSchoolProfile();showSetup(1)}
+
+/* ======================== DASHBOARD ======================== */
 async function bootDashboard(){
-    localStorage.setItem('neis_office_code',state.officeCode); localStorage.setItem('neis_office_name',state.officeName);
-    localStorage.setItem('neis_school_code',state.schoolCode); localStorage.setItem('neis_school_name',state.schoolName); localStorage.setItem('neis_school_kind',state.schoolKind);
-    $('wizard-container').classList.add('hidden'); $('result-container').classList.remove('hidden');
-    $('result-school-title').textContent=state.schoolName;
-    $('result-school-detail').textContent=`${state.officeName} · ${state.schoolKind || '학교'}`;
-    setStatus('LOADING');
-    try{
-        await Promise.all([fetchMealWindow(), fetchSchedule(state.scheduleMonth)]);
-    }catch(err){ console.error(err); }
-    setupTimetableControls();
-    setStatus('READY');
-    setTimeout(syncScrollRail, 40);
-    fetchAiQuickInsight(state.todayMenuText);
+  saveProfile();$('setup-container').classList.add('hidden');$('dashboard-container').classList.remove('hidden');
+  $('school-title').textContent=state.schoolName;$('school-detail').textContent=`${state.officeName} · ${state.schoolKind||'학교'} · ${state.grade}학년 ${state.className}반`;
+  state.currentTab='meal';state.currentView='direct';state.aiChatHistory=[];state.aiLastReport='';state.aiLastError='';state.selectedMealDate=todayDate();state.selectedTimetableDate=todayDate();state.scheduleMonth=new Date(todayDate().getFullYear(),todayDate().getMonth(),1);
+  showDirectView(false);setViewModeButton('direct');switchTab('meal');
+  const tasks=[];
+  tasks.push(fetchMealWindow().then(()=>renderMealTab()).catch(e=>{console.error(e);renderMealTab()}));
+  tasks.push(fetchScheduleYear().catch(e=>console.error(e)));
+  tasks.push(loadTimetableForDate(state.selectedTimetableDate).catch(e=>console.error(e)));
+  await Promise.allSettled(tasks);
+  renderMealTab();renderTimetableTab();renderScheduleTab();
 }
-function changeSchoolInfo(){
-    localStorage.removeItem('neis_school_code'); localStorage.removeItem('neis_school_name'); localStorage.removeItem('neis_school_kind');
-    state.schoolCode=''; state.schoolName=''; state.schoolKind=''; state.schoolData=null;
-    $('result-container').classList.add('hidden'); $('wizard-container').classList.remove('hidden');
-    $('step-2').classList.add('hidden'); $('step-1').classList.remove('hidden');
-    $('indicator-2').classList.remove('active'); $('step-count').textContent='01 / 02';
-    $('school-input').value=''; $('school-results').innerHTML=''; $('school-results').classList.add('hidden'); $('search-trigger-btn').disabled=true;
+function setViewModeButton(mode){
+  const b=$('view-mode-button');if(!b)return;
+  if(mode==='ai'){
+    b.classList.add('direct-mode');
+    b.innerHTML=`<span class="view-mode-icon">⌘</span><span class="view-mode-copy"><strong>정보 직접 보기</strong><small>급식 · 하루 시간표 · 학사일정을 직접 확인하세요.</small></span><span class="view-mode-arrow">›</span>`;
+    b.setAttribute('aria-label','정보 직접 보기');
+  }else{
+    b.classList.remove('direct-mode');
+    b.innerHTML=`<span class="view-mode-icon">✦</span><span class="view-mode-copy"><strong>정보가 복잡하다면? 대마법사에게 물어보기</strong><small>급식 · 하루 시간표 · 학사일정을 한 번에 물어볼 수 있어요.</small></span><span class="view-mode-arrow">›</span>`;
+    b.setAttribute('aria-label','대마법사에게 물어보기');
+  }
 }
-function resetWizard(){ changeSchoolInfo(); }
-function reloadDashboard(){ bootDashboard().catch(err=>{console.error(err);showToast('데이터를 새로 불러오지 못했습니다.');}); }
-
-/* ============================================================
-   5. MEAL
-   ============================================================ */
+function toggleViewMode(){if(state.currentView==='ai')showDirectView();else showAiView()}
+function showAiView(){
+  if($('dashboard-container').classList.contains('hidden'))return;
+  state.currentView='ai';$('dashboard-container').classList.add('dashboard-ai-mode');$('direct-view').classList.add('hidden');$('ai-view').classList.remove('hidden');setViewModeButton('ai');
+  loadAiLanding();setTimeout(scrollAiToBottom,30);
+}
+function showDirectView(scrollTop=true){
+  state.currentView='direct';$('dashboard-container').classList.remove('dashboard-ai-mode');$('direct-view').classList.remove('hidden');$('ai-view').classList.add('hidden');setViewModeButton('direct');if(scrollTop)$('main-scroll')?.scrollTo({top:0,behavior:'smooth'});
+}
+function switchTab(tab){
+  state.currentTab=tab;showDirectView(false);['meal','timetable','schedule'].forEach(t=>{$(`tab-${t}`).classList.toggle('active',t===tab);$(`tab-btn-${t}`).classList.toggle('active',t===tab)});$('main-scroll')?.scrollTo({top:0,behavior:'smooth'});renderCurrentTab();
+}
+function renderCurrentTab(){if(state.currentTab==='meal')renderMealTab();if(state.currentTab==='timetable')renderTimetableTab();if(state.currentTab==='schedule')renderScheduleTab()}
+function reloadCurrentTab(){
+  if($('dashboard-container').classList.contains('hidden'))return;
+  if(state.currentView==='ai'){loadAiLanding();return}
+  if(state.currentTab==='meal')fetchMealWindow().then(renderMealTab).catch(()=>showToast('급식 정보를 새로 불러오지 못했습니다.'));
+  if(state.currentTab==='schedule')fetchScheduleYear().then(renderScheduleTab).catch(()=>showToast('학사일정을 새로 불러오지 못했습니다.'));
+  if(state.currentTab==='timetable')loadTimetableForDate(state.selectedTimetableDate).then(renderTimetableTab).catch(()=>showToast('시간표를 새로 불러오지 못했습니다.'));
+}
+async function goToday(){
+  if($('dashboard-container').classList.contains('hidden'))return;const d=todayDate();state.selectedMealDate=d;state.selectedTimetableDate=d;state.scheduleMonth=new Date(d.getFullYear(),d.getMonth(),1);
+  if(state.currentView==='ai'){loadAiLanding();return}renderCurrentTab();if(state.currentTab==='timetable'){try{await loadTimetableForDate(d);renderTimetableTab()}catch(e){console.error(e)}}
+}
+/* ======================== MEAL ======================== */
+function mealWindowEnd(){const d=todayDate();d.setDate(d.getDate()+6);return d}
+function isMealWindowDate(d){const t=todayDate(),end=mealWindowEnd();return d>=t&&d<=end}
 async function fetchMealWindow(){
-    const today=todayDate();
-    const start=new Date(today); start.setDate(today.getDate()-2);
-    const end=new Date(today); end.setDate(today.getDate()+9);
-    const data=await neis('mealServiceDietInfo',{
-        ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
-        MLSV_FROM_YMD:ymd(start), MLSV_TO_YMD:ymd(end), pSize:'200'
-    });
-    state.mealRows=extractRows(data,'mealServiceDietInfo');
-    renderTodayMeal(today); renderWeekly(today);
-    setTimeout(syncScrollRail, 30);
+  const t=todayDate(),end=mealWindowEnd();
+  const data=await neis('mealServiceDietInfo',{ATPT_OFCDC_SC_CODE:state.officeCode,SD_SCHUL_CODE:state.schoolCode,MLSV_FROM_YMD:ymd(t),MLSV_TO_YMD:ymd(end),pSize:'100'});
+  state.mealRows=extractRows(data,'mealServiceDietInfo').filter(r=>r.MMEAL_SC_CODE==='2');state.mealLoaded=true;
 }
-function mealFor(date){ return state.mealRows.find(r=>r.MLSV_YMD===ymd(date) && r.MMEAL_SC_CODE==='2'); }
-function renderTodayMeal(date){
-    const meal=mealFor(date);
-    $('today-date-str').textContent=fmtLong(date);
-    $('today-day-label').textContent=`${weekday(date)}요일 · 중식`;
-    if(!meal){
-        $('today-menu-content').innerHTML='<span style="color:#777f89;font-size:13px">등록된 중식 급식 정보가 없습니다.</span>';
-        $('today-cal-badge').textContent='정보 없음'; state.todayMenuText=''; state.todayCalInfo=''; return;
-    }
-    const menus=htmlMenu(meal.DDISH_NM);
-    $('today-menu-content').innerHTML=menus.map(m=>`<span class="menu-chip">${esc(m)}</span>`).join('');
-    $('today-cal-badge').textContent=meal.CAL_INFO || '열량 정보 없음';
-    state.todayMenuText=menus.join(', '); state.todayCalInfo=meal.CAL_INFO || '';
+function mealFor(date){if(!isMealWindowDate(date))return null;return state.mealRows.find(r=>r.MLSV_YMD===ymd(date)&&r.MMEAL_SC_CODE==='2')}
+function selectMealDate(date){
+  const d=new Date(date);d.setHours(0,0,0,0);
+  if(!isMealWindowDate(d)){showToast('급식은 오늘부터 7일만 확인할 수 있어요.');return}
+  state.selectedMealDate=d;renderMealTab();$('main-scroll').scrollTo({top:0,behavior:'smooth'});
 }
-function renderWeekly(anchor){
-    const box=$('weekly-horizontal-container'); box.innerHTML='';
-    for(let i=-1;i<7;i++){
-        const d=new Date(anchor); d.setDate(anchor.getDate()+i);
-        const meal=mealFor(d); const menus=meal ? htmlMenu(meal.DDISH_NM) : [];
-        const btn=document.createElement('button'); btn.className=`week-day ${isSameDay(d,anchor)?'active':''}`;
-        btn.innerHTML=`<div class="day-top"><span class="day-name">${isSameDay(d,anchor)?'TODAY':weekday(d)+'요일'}</span><span class="day-num">${d.getDate()}</span></div>
-            <div class="day-meal">${menus.length ? esc(menus.slice(0,3).join(' · ')) + (menus.length>3?' …':'') : '<span style="color:#626a74">급식 없음</span>'}</div>
-            <div class="day-cal">${meal ? esc(meal.CAL_INFO || '열량 미기재') : '—'}</div>`;
-        btn.onclick=()=>{
-            state.selectedDate=d; renderTodayMeal(d); renderWeekly(d);
-            scrollToMain('today-card');
-        };
-        box.appendChild(btn);
-    }
+function renderMealTab(){
+  const el=$('tab-meal');if(!el)return;let d=state.selectedMealDate||todayDate();if(!isMealWindowDate(d))d=todayDate();state.selectedMealDate=d;const meal=mealFor(d);const menus=meal?htmlMenu(meal.DDISH_NM):[];
+  state.todayMenuText=menus.join(', ');state.todayCalInfo=meal?.CAL_INFO||'';
+  const t=todayDate(),end=mealWindowEnd();
+  el.innerHTML=`
+    <div class="section-head"><div><div class="section-title">급식</div><div class="section-sub">오늘 포함 앞으로 7일의 중식만 보여줍니다.</div></div><div class="section-actions"><button class="small-btn today-inline ${isSameDay(d,t)?'active':''}" onclick="selectMealDate(todayDate())">오늘</button></div></div>
+    <div class="meal-layout">
+      <article class="meal-hero">
+        <div class="date-row"><div><div class="date-big">${fmtLong(d)}</div><div class="date-small">${weekday(d)}요일 · 중식</div></div><div class="today-tag">${isSameDay(d,t)?'TODAY':`${shortDate(d)}`}</div></div>
+        <div class="menu-heading">LUNCH MENU</div>
+        <div class="menu-list">${menus.length?menus.map(m=>`<span class="menu-chip">${esc(m)}</span>`).join(''):'<span class="meal-empty-copy">등록된 중식 급식 정보가 없습니다.</span>'}</div>
+        <div class="meal-foot"><div class="meal-note">${isSameDay(d,t)?'오늘의 급식을 보고 있어요.':'선택한 날짜의 급식을 보고 있어요.'}<br>원하는 날짜를 아래에서 눌러보세요.</div><div class="calorie"><div class="calorie-label">중식 기준 열량</div><div class="calorie-value">${esc(meal?.CAL_INFO||'정보 없음')}</div></div></div>
+      </article>
+      <aside class="meal-ai">
+        <div><div class="ai-label">WIZARD'S NOTE</div><div class="ai-title">오늘의 한 줄 예언</div><div id="meal-ai-copy" class="ai-copy">대마법사가 오늘의 식단을 읽는 중이니라...</div></div>
+        <div class="ai-footer"><span class="ai-footer-note">복잡하다면 상단의 대마법사에게 물어보세요.</span><button class="ai-button" onclick="showAiView()">대화 시작 →</button></div>
+      </aside>
+    </div>
+    <div class="week-section">
+      <div class="section-head"><div><div class="section-title">앞으로 7일</div><div class="section-sub">${shortDate(t)} — ${shortDate(end)} · 원하는 날짜를 누르세요.</div></div></div>
+      <div class="week-shell"><div id="meal-week" class="week-scroller"></div></div>
+    </div>`;
+  renderMealWeek();
+  loadMealProphecy(d,meal);
 }
-function scrollWeekly(offset){ $('weekly-horizontal-container').scrollBy({left:offset,behavior:'smooth'}); }
-function goToday(){
-    const d=todayDate(); state.selectedDate=d; renderTodayMeal(d); renderWeekly(d);
-    scrollToMain('today-card');
+function renderMealWeek(){
+  const box=$('meal-week');if(!box)return;box.innerHTML='';const t=todayDate();
+  for(let i=0;i<7;i++){
+    const d=new Date(t);d.setDate(t.getDate()+i);const meal=mealFor(d);const menus=meal?htmlMenu(meal.DDISH_NM):[];const b=document.createElement('button');b.className=`week-day ${isSameDay(d,state.selectedMealDate)?'active':''}`;
+    b.innerHTML=`<div class="day-top"><span class="day-name">${isSameDay(d,t)?'TODAY':weekday(d)+'요일'}</span><span class="day-num">${d.getDate()}</span></div><div class="day-meal">${menus.length?esc(menus.slice(0,3).join(' · '))+(menus.length>3?' …':''):'급식 없음'}</div><div class="day-cal">${meal?esc(meal.CAL_INFO||'열량 미기재'):'—'}</div>`;
+    b.onclick=()=>selectMealDate(d);box.appendChild(b);
+  }
 }
+function scrollWeek(offset){$('meal-week')?.scrollBy({left:offset,behavior:'smooth'})}
 
-/* ============================================================
-   6. ACADEMIC SCHEDULE
-   ============================================================ */
-async function fetchSchedule(monthDate){
-    $('schedule-month-label').textContent=fmtMonth(monthDate);
-    const start=new Date(monthDate.getFullYear(),monthDate.getMonth(),1);
-    const end=new Date(monthDate.getFullYear(),monthDate.getMonth()+1,0);
-    setLoading($('schedule-list'),'학사일정을 불러오는 중...');
-    try{
-        const data=await neis('SchoolSchedule',{
-            ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
-            AA_FROM_YMD:ymd(start), AA_TO_YMD:ymd(end), pSize:'200'
-        });
-        state.scheduleRows=extractRows(data,'SchoolSchedule').sort((a,b)=>String(a.AA_YMD).localeCompare(String(b.AA_YMD)));
-        renderSchedule();
-        setTimeout(syncScrollRail, 30);
-    }catch(err){
-        console.error(err); state.scheduleRows=[];
-        $('schedule-list').innerHTML='<div class="empty">이 달의 학사일정을 불러오지 못했습니다.</div>';
-    }
+/* ======================== TIMETABLE ======================== */
+function getTimetableEndpoint(){const k=state.schoolKind||'';if(k.includes('초등'))return 'elsTimetable';if(k.includes('중학'))return 'misTimetable';if(k.includes('고등'))return 'hisTimetable';return ''}
+async function loadTimetableForDate(date){
+  const endpoint=getTimetableEndpoint();if(!endpoint)return;
+  const key=`${endpoint}|${ymd(date)}|${state.grade}`;if(state.timetableCache[key])return state.timetableCache[key];
+  const data=await neis(endpoint,{ATPT_OFCDC_SC_CODE:state.officeCode,SD_SCHUL_CODE:state.schoolCode,ALL_TI_YMD:ymd(date),GRADE:state.grade,pSize:'1000'});
+  const rows=extractRows(data,endpoint).filter(r=>!r.GRADE||String(r.GRADE)===String(state.grade));
+  state.timetableCache[key]=rows;return rows;
 }
-function renderSchedule(){
-    const list=$('schedule-list'); list.innerHTML='';
-    if(!state.scheduleRows.length){ list.innerHTML='<div class="empty">등록된 학사일정이 없습니다.</div>'; return; }
-    const today=ymd(todayDate());
-    state.scheduleRows.slice(0,4).forEach(r=>{
-        const d=fromYmd(r.AA_YMD); const item=document.createElement('div'); item.className='event';
-        item.innerHTML=`<div class="event-date ${r.AA_YMD===today?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div>
-            <div><div class="event-title">${esc(r.EVENT_NM || '일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div>`;
-        list.appendChild(item);
-    });
+function getSelectedTimetableRows(){const endpoint=getTimetableEndpoint();return state.timetableCache[`${endpoint}|${ymd(state.selectedTimetableDate)}|${state.grade}`]||[]}
+async function selectTimetableDate(date){state.selectedTimetableDate=new Date(date);renderTimetableTab();try{await loadTimetableForDate(state.selectedTimetableDate);renderTimetableTab()}catch(e){console.error(e);showToast('시간표를 불러오지 못했습니다.')}}
+function renderTimetableTab(){
+  const el=$('tab-timetable');if(!el)return;const d=state.selectedTimetableDate||todayDate();const endpoint=getTimetableEndpoint();const rows=getSelectedTimetableRows();
+  const days=[];for(let i=-2;i<5;i++){const x=new Date(todayDate());x.setDate(x.getDate()+i);days.push(x)}
+  const weekHtml=days.map(x=>`<button class="day-pill ${isSameDay(x,d)?'active':''}" onclick="selectTimetableDate(new Date('${x.toISOString().slice(0,10)}'))"><div class="w">${weekday(x)}요일</div><div class="d">${x.getDate()}</div></button>`).join('');
+  el.innerHTML=`
+    <div class="section-head"><div><div class="section-title">하루 시간표</div><div class="section-sub">저장된 ${state.grade}학년 ${state.className}반 기준입니다.</div></div><div class="section-actions"><button class="small-btn" onclick="state.selectedTimetableDate=todayDate();loadTimetableForDate(state.selectedTimetableDate).then(renderTimetableTab)">오늘</button></div></div>
+    <div class="timetable-toolbar"><div class="day-picker">${weekHtml}</div><div class="filter-pair"><select class="select-pill" onchange="changeSavedGrade(this.value)">${gradeOptions().map(g=>`<option value="${g}" ${String(g)===String(state.grade)?'selected':''}>${g}학년</option>`).join('')}</select><select class="select-pill" onchange="changeSavedClass(this.value)">${Array.from({length:40},(_,i)=>i+1).map(c=>`<option value="${c}" ${String(c)===String(state.className)?'selected':''}>${c}반</option>`).join('')}</select></div></div>
+    <article class="glass timetable-card">
+      <div class="timetable-meta"><div><div class="timetable-date">${fmtLong(d)}</div><div class="timetable-sub">${weekday(d)}요일 · ${state.schoolName} · ${state.grade}학년 ${state.className}반</div></div><div class="today-tag">${isSameDay(d,todayDate())?'TODAY':'DAY VIEW'}</div></div>
+      ${endpoint?renderSelectedDayTable(rows):'<div class="empty">학교급을 판별할 수 없어 시간표를 준비하지 못했습니다.</div>'}
+    </article>`;
+}
+function renderSelectedDayTable(rows){
+  if(!rows.length)return '<div class="empty">선택한 날에는 등록된 시간표가 없습니다.</div>';
+  const cls=String(state.className);let filtered=rows.filter(r=>!r.CLASS_NM||normClass(r.CLASS_NM)===normClass(cls));
+  if(!filtered.length){filtered=rows.filter(r=>String(r.CLASS_NM||'').includes(cls));}
+  if(!filtered.length)return '<div class="empty">선택한 반의 시간표가 없습니다.<br>저장된 반 정보를 확인해보세요.</div>';
+  filtered.sort((a,b)=>(Number(a.PERIO)||0)-(Number(b.PERIO)||0));
+  return `<table class="single-day-table"><tbody>${filtered.map(r=>`<tr><td>${Number(r.PERIO)||''}교시</td><td><div class="single-subject">${esc(r.ITRT_CNTNT||r.SUBJECT||r.ITRT_NM||'수업')}</div><div class="single-room">${esc(r.CLRM_NM||'')}</div></td></tr>`).join('')}</tbody></table>`;
+}
+async function changeSavedGrade(v){state.grade=v;state.timetableCache={};saveProfile();$('school-detail').textContent=`${state.officeName} · ${state.schoolKind||'학교'} · ${state.grade}학년 ${state.className}반`;await loadTimetableForDate(state.selectedTimetableDate);renderTimetableTab()}
+async function changeSavedClass(v){state.className=v;saveProfile();$('school-detail').textContent=`${state.officeName} · ${state.schoolKind||'학교'} · ${state.grade}학년 ${state.className}반`;renderTimetableTab()}
+
+/* ======================== SCHEDULE ======================== */
+function currentScheduleYear(){return todayDate().getFullYear()}
+function scheduleRowsForMonth(monthDate){return state.scheduleRows.filter(r=>{const d=fromYmd(r.AA_YMD);return d.getFullYear()===currentScheduleYear()&&d.getMonth()===monthDate.getMonth()}).sort((a,b)=>String(a.AA_YMD).localeCompare(String(b.AA_YMD)))}
+async function fetchScheduleYear(){
+  const year=currentScheduleYear();const targetMonth=state.scheduleMonth?state.scheduleMonth.getMonth():todayDate().getMonth();state.scheduleMonth=new Date(year,targetMonth,1);
+  if(state.scheduleMonth.getFullYear()!==year)state.scheduleMonth=new Date(year,todayDate().getMonth(),1);
+  const data=await neis('SchoolSchedule',{ATPT_OFCDC_SC_CODE:state.officeCode,SD_SCHUL_CODE:state.schoolCode,AA_FROM_YMD:`${year}0101`,AA_TO_YMD:`${year}1231`,pSize:'1000'});
+  state.scheduleRows=extractRows(data,'SchoolSchedule').filter(r=>String(r.AA_YMD||'').startsWith(String(year))).sort((a,b)=>String(a.AA_YMD).localeCompare(String(b.AA_YMD)));renderScheduleTab();
 }
 function moveScheduleMonth(delta){
-    state.scheduleMonth=new Date(state.scheduleMonth.getFullYear(),state.scheduleMonth.getMonth()+delta,1);
-    fetchSchedule(state.scheduleMonth);
+  const year=currentScheduleYear(),cur=state.scheduleMonth||new Date(year,todayDate().getMonth(),1);const next=new Date(year,cur.getMonth()+delta,1);
+  if(next.getFullYear()!==year){showToast(`${year}년 학사일정만 확인할 수 있어요.`);return}
+  state.scheduleMonth=next;renderScheduleTab();
 }
-
-/* ============================================================
-   7. TIMETABLE
-   ============================================================ */
-function getTimetableEndpoint(){
-    const kind=state.schoolKind || state.schoolData?.SCHUL_KND_SC_NM || '';
-    if(kind.includes('초등')) return 'elsTimetable';
-    if(kind.includes('중학')) return 'misTimetable';
-    if(kind.includes('고등')) return 'hisTimetable';
-    return null;
+function renderScheduleTab(){
+  const el=$('tab-schedule');if(!el)return;const year=currentScheduleYear(),month=state.scheduleMonth?.getFullYear()===year?state.scheduleMonth:new Date(year,todayDate().getMonth(),1),today=ymd(todayDate()),rows=scheduleRowsForMonth(month),visible=rows.slice(0,6);state.scheduleMonth=month;
+  const atStart=month.getMonth()===0,atEnd=month.getMonth()===11;
+  el.innerHTML=`
+    <div class="section-head"><div><div class="section-title">학사일정</div><div class="section-sub">${year}년 일정만 확인할 수 있습니다.</div></div><div class="section-actions"><button class="small-btn" onclick="state.scheduleMonth=new Date(${year},${todayDate().getMonth()},1);renderScheduleTab()">이번 달</button><button class="small-btn" onclick="openScheduleModal()">전체 보기</button></div></div>
+    <article class="glass schedule-card">
+      <div class="schedule-toolbar"><div class="month-chip"><button class="icon-btn" ${atStart?'disabled':''} onclick="moveScheduleMonth(-1)">←</button><div id="schedule-month-label" class="month-label">${fmtMonth(month)}</div><button class="icon-btn" ${atEnd?'disabled':''} onclick="moveScheduleMonth(1)">→</button></div><div style="font-size:9px;color:#98a2b2">${rows.length}개 일정</div></div>
+      <div class="schedule-list">${visible.length?visible.map(r=>{const d=fromYmd(r.AA_YMD);return `<div class="event"><div class="event-date ${r.AA_YMD===today?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div><div><div class="event-title">${esc(r.EVENT_NM||'일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div></div>`}).join(''):'<div class="schedule-empty">등록된 학사일정이 없습니다.</div>'}</div>
+      <button class="schedule-more" onclick="openScheduleModal()">${rows.length>visible.length?'이 달의 일정 전체 보기':'학사일정 자세히 보기'}</button>
+    </article>`;
 }
-function setupTimetableControls(){
-    const grade=$('grade-select'), cls=$('class-select');
-    grade.innerHTML=''; cls.innerHTML='';
-    for(let i=1;i<=6;i++){ const o=document.createElement('option'); o.value=i; o.textContent=`${i}학년`; grade.appendChild(o); }
-    for(let i=1;i<=20;i++){ const o=document.createElement('option'); o.value=i; o.textContent=`${i}반`; cls.appendChild(o); }
-    // 마지막 사용값이 있으면 복원
-    grade.value=localStorage.getItem('neis_grade') || '1'; cls.value=localStorage.getItem('neis_class') || '1';
-    loadTimetable();
-}
-async function loadTimetable(){
-    if(!state.schoolCode) return;
-    const endpoint=getTimetableEndpoint();
-    if(!endpoint){ $('timetable-container').innerHTML='<div class="empty">이 학교의 시간표 API 종류를 판별하지 못했습니다.</div>'; return; }
-    const grade=$('grade-select').value, cls=$('class-select').value;
-    localStorage.setItem('neis_grade',grade); localStorage.setItem('neis_class',cls);
-    const today=todayDate(); const key=`${endpoint}|${ymd(today)}|${grade}|${cls}`;
-    if(state.timetableRequestKey===key && state.timetableRows.length) { renderTimetable(); return; }
-    state.timetableRequestKey=key;
-    setLoading($('timetable-container'),'오늘 시간표를 불러오는 중...');
-    try{
-        const params={
-            ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
-            ALL_TI_YMD:ymd(today), GRADE:grade, CLASS_NM:cls, pSize:'200'
-        };
-        const data=await neis(endpoint,params);
-        let rows=extractRows(data,endpoint);
-        // 일부 학교/급은 CLASS_NM 값이 숫자/문자열로 섞여 내려올 수 있어 느슨하게 한 번 더 필터링
-        rows=rows.filter(r=>String(r.GRADE||'')===String(grade) && String(r.CLASS_NM||'')===String(cls) || (!r.GRADE && !r.CLASS_NM));
-        state.timetableRows=rows;
-        renderTimetable();
-        setTimeout(syncScrollRail, 30);
-    }catch(err){
-        console.error(err); state.timetableRows=[];
-        $('timetable-container').innerHTML='<div class="empty">시간표를 가져오지 못했습니다. 학년/반을 바꾸거나 잠시 후 다시 시도해주세요.</div>';
-    }
-}
-function renderTimetable(){
-    const box=$('timetable-container');
-    if(!state.timetableRows.length){ box.innerHTML='<div class="empty">오늘 등록된 시간표가 없습니다.</div>'; return; }
-    const days=[1,2,3,4,5]; const labels=['월','화','수','목','금'];
-    const maxPeriod=Math.max(6,...state.timetableRows.map(r=>Number(r.PERIO)||0));
-    const lookup={};
-    state.timetableRows.forEach(r=>{
-        const d=Number(r.ALL_TI_YMD?.slice(-2)) || new Date().getDay();
-        const dayIndex=new Date(Number(r.ALL_TI_YMD?.slice(0,4)||todayDate().getFullYear()), Number(r.ALL_TI_YMD?.slice(4,6)||todayDate().getMonth()+1)-1, Number(r.ALL_TI_YMD?.slice(6,8)||todayDate().getDate())).getDay();
-        const period=Number(r.PERIO)||0;
-        const key=`${dayIndex}|${period}`; lookup[key]=r;
-    });
-    let html='<table class="timetable"><thead><tr><th></th>'+labels.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
-    for(let p=1;p<=maxPeriod;p++){
-        html+=`<tr><td class="period-cell">${p}교시</td>`;
-        for(let i=0;i<5;i++){
-            const r=lookup[`${days[i]}|${p}`];
-            html+=r ? `<td><div class="subject">${esc(r.ITRT_CNTNT || r.SUBJECT || r.ITRT_NM || '수업')}</div><div class="subject-room">${esc(r.CLRM_NM || r.CLASS_NM || '')}</div></td>` : '<td><span style="color:#555c65;font-size:10px">—</span></td>';
-        }
-        html+='</tr>';
-    }
-    html+='</tbody></table>'; box.innerHTML=html;
-}
-
 function openScheduleModal(){
-    const modal=$('schedule-modal'); const content=$('schedule-modal-content');
-    $('schedule-modal-sub').textContent=fmtMonth(state.scheduleMonth)+' · ' + state.scheduleRows.length + '개 일정';
-    if(!state.scheduleRows.length){ content.innerHTML='<div class="empty">등록된 학사일정이 없습니다.</div>'; }
-    else { content.innerHTML=state.scheduleRows.map(r=>{ const d=fromYmd(r.AA_YMD); return `<div class="event" style="margin-bottom:7px"><div class="event-date ${r.AA_YMD===ymd(todayDate())?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div><div><div class="event-title">${esc(r.EVENT_NM || '일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc" style="white-space:normal;line-height:1.45">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div></div>`; }).join(''); }
-    modal.classList.remove('hidden');
+  const rows=scheduleRowsForMonth(state.scheduleMonth);$('schedule-modal-sub').textContent=`${fmtMonth(state.scheduleMonth)} · ${rows.length}개 일정`;
+  const content=$('schedule-modal-content');content.innerHTML=rows.length?rows.map(r=>{const d=fromYmd(r.AA_YMD);return `<div class="event" style="margin-bottom:8px"><div class="event-date ${r.AA_YMD===ymd(todayDate())?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div><div><div class="event-title">${esc(r.EVENT_NM||'일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc" style="white-space:normal;line-height:1.5">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div></div>`}).join(''):'<div class="schedule-empty">등록된 학사일정이 없습니다.</div>';
+  $('schedule-modal').classList.remove('hidden');
 }
-function closeScheduleModal(){ $('schedule-modal').classList.add('hidden'); }
+function closeScheduleModal(){$('schedule-modal').classList.add('hidden')}
 
-/* ============================================================
-   8. AI
-   ============================================================ */
-async function callGemini(systemPrompt,userPrompt){
-    if(!GEMINI_API_KEY){ return '마법의 수정구슬에 안개가 끼어 있노라...'; }
-    const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-    const payload={contents:[{parts:[{text:userPrompt}]}],systemInstruction:{parts:[{text:systemPrompt}]}};
-    let wait=700;
-    for(let i=0;i<3;i++){
-        try{
-            const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-            const data=await response.json();
-            const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if(text) return text;
-        }catch(e){ console.warn('Gemini retry',e); }
-        await new Promise(r=>setTimeout(r,wait)); wait*=2;
-    }
-    return '수정구슬이 잠시 흐려졌노라. 조금 뒤 다시 시도해보거라.';
+/* ======================== AI ======================== */
+const GEMINI_MODELS=['gemini-3.1-flash-lite','gemini-3.5-flash-lite'];
+async function callGemini(systemPrompt,userPrompt,history=[],options={}){
+  let keys;try{keys=await getApiKeys()}catch(e){state.aiLastError='API 키 복호화에 실패했습니다.';console.error(e);return null}
+  if(!keys?.gemini){state.aiLastError='Gemini API 키를 찾지 못했습니다.';return null}
+  const models=options.models||GEMINI_MODELS;
+  const maxOutputTokens=options.maxOutputTokens||320;
+  const timeoutMs=options.timeoutMs||9000;
+  const contents=[...history.slice(-4).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:String(m.text||'')}]})),{role:'user',parts:[{text:userPrompt}]}];
+  let lastError='';
+  for(const model of models){
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    const payload={contents,systemInstruction:{parts:[{text:systemPrompt}]},generationConfig:{maxOutputTokens,thinkingConfig:{thinkingLevel:'minimal'}}};
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':keys.gemini},body:JSON.stringify(payload),signal:controller.signal});
+      const data=await r.json().catch(()=>({}));
+      if(r.ok){const txt=data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('').trim();if(txt){state.aiLastError='';clearTimeout(timer);return txt}}
+      const apiMessage=data?.error?.message||data?.error?.status||`HTTP ${r.status}`;lastError=`${model}: ${apiMessage}`;console.warn('Gemini error',model,r.status,data);if(r.status===401||r.status===403)break;
+    }catch(e){lastError=`${model}: ${e?.name==='AbortError'?'응답 시간 초과':(e?.message||'네트워크 오류')}`;console.warn('Gemini fetch error',e)}finally{clearTimeout(timer)}
+  }
+  state.aiLastError=lastError||'알 수 없는 Gemini 오류';return null;
 }
-async function fetchAiQuickInsight(menuText){
-    if(!menuText){ $('ai-insight-text').textContent='오늘은 등록된 중식이 없구나. 대마법사도 빈 식판 앞에서는 침묵하노라.'; return; }
-    $('ai-insight-text').textContent='대마법사가 오늘의 식단을 살펴보는 중이니라...';
-    const system='너는 지혜로운 판타지 세계의 대마법사다. 학생의 급식 메뉴를 보고 과장된 의학적 판단 없이, 재미있고 유익한 한 줄 조언을 55자 이내로 말하라. 말투는 자연스러운 마법사 말투를 유지하라.';
-    $('ai-insight-text').textContent=await callGemini(system,`오늘의 메뉴: ${menuText}\n칼로리: ${state.todayCalInfo}`);
+
+/* ======================== MEAL AI QUICK INSIGHT ======================== */
+async function loadMealProphecy(date,meal){
+  const box=$('meal-ai-copy');if(!box)return;
+  const menus=meal?htmlMenu(meal.DDISH_NM):[];
+  if(!meal||!menus.length){box.textContent='오늘은 등록된 중식 정보가 없어 예언을 내릴 수 없노라.';return}
+  const key=`${ymd(date)}|${menus.join('|')}|${meal.CAL_INFO||''}`;
+  if(state.aiQuickInsightCache[key]){box.textContent=state.aiQuickInsightCache[key];return}
+  if(state.aiQuickInsightKey===key && state.aiQuickInsightPending)return;
+  state.aiQuickInsightKey=key;
+  box.textContent='대마법사가 오늘의 식단을 살펴보는 중이니라...';
+  const system='너는 학교 생활을 돕는 판타지 세계의 대마법사다. 오늘 급식 메뉴만 보고 학생이 재미있게 읽을 짧은 한 줄 예언을 만든다. 사실을 과장하거나 영양학적 의학 조언을 하지 말고, 35~55자 정도의 자연스러운 한국어 한 문장으로 답한다. 마법사 말투는 살짝만 사용한다.';
+  const prompt=`오늘의 급식 메뉴: ${menus.join(', ')}\n열량: ${meal.CAL_INFO||'정보 없음'}\n한 줄 예언만 작성해줘.`;
+  const pending=callGemini(system,prompt,[],{models:['gemini-3.1-flash-lite'],maxOutputTokens:90,timeoutMs:6500});
+  state.aiQuickInsightPending=pending;
+  const reply=await pending;state.aiQuickInsightPending=null;
+  if(state.aiQuickInsightKey!==key)return;
+  if(reply){state.aiQuickInsightCache[key]=reply;box.textContent=reply}
+  else{
+    const fallback=`오늘의 식단에는 든든한 기운이 감도는구나. 한 끼를 천천히 즐기도록 하거라.`;
+    state.aiQuickInsightCache[key]=fallback;box.textContent=fallback;
+  }
 }
-async function openAiModal(){
-    $('ai-modal').classList.remove('hidden');
-    const content=$('ai-modal-content');
-    if(!state.todayMenuText){ content.innerHTML='<div class="empty">오늘의 식단이 없어 분석할 재료가 없구나.</div>'; return; }
-    content.innerHTML='<div class="loading">대마법사가 식단의 기록을 읽는 중...</div>';
-    const system='너는 지혜롭고 약간 괴짜인 판타지 세계의 대마법사다. 급식 메뉴를 바탕으로 재미있는 식사 해석을 해라. 1) 오늘 메뉴의 인상 2) 눈여겨볼 음식 3) 학생에게 줄 한 가지 팁을 작성하라. 실제 영양소 수치를 모르는 경우 추정하지 말고 메뉴 이름 수준에서만 이야기하라. 마법사 말투를 사용하되 읽기 쉽게 써라.';
-    const report=await callGemini(system,`학교: ${state.schoolName}\n오늘 메뉴: ${state.todayMenuText}\n열량: ${state.todayCalInfo}`);
-    content.innerHTML=`<div class="ai-report">${esc(report)}</div><div id="chat-log" class="chat-log"></div>`;
+function buildContext(){
+  const meal=mealFor(state.selectedMealDate);const mealText=meal?htmlMenu(meal.DDISH_NM).join(', '):'등록된 중식 없음';
+  const tt=getSelectedTimetableRows().filter(r=>!r.CLASS_NM||normClass(r.CLASS_NM)===normClass(state.className)).sort((a,b)=>(Number(a.PERIO)||0)-(Number(b.PERIO)||0));
+  const timetableText=tt.length?tt.map(r=>`${r.PERIO}교시 ${r.ITRT_CNTNT||r.SUBJECT||r.ITRT_NM||'수업'}${r.CLRM_NM?`(${r.CLRM_NM})`:''}`).join(', '):'등록된 시간표 없음';
+  const scheduleText=state.scheduleRows.filter(r=>String(r.AA_YMD||'').startsWith(String(currentScheduleYear()))).sort((a,b)=>String(a.AA_YMD).localeCompare(String(b.AA_YMD))).slice(0,24).map(r=>`${r.AA_YMD}: ${r.EVENT_NM||'일정'}${r.EVENT_CNTNT?` - ${cleanHtmlText(r.EVENT_CNTNT)}`:''}`).join('\n')||'학사일정 없음';
+  return `학교: ${state.schoolName}\n학급: ${state.grade}학년 ${state.className}반\n기준 급식 날짜: ${ymd(state.selectedMealDate)}\n급식: ${mealText}\n열량: ${meal?.CAL_INFO||'정보 없음'}\n기준 시간표 날짜: ${ymd(state.selectedTimetableDate)}\n시간표: ${timetableText}\n${currentScheduleYear()}년 학사일정:\n${scheduleText}`;
 }
-function closeAiModal(){ $('ai-modal').classList.add('hidden'); }
+function appendAiMessage(role,text){const log=$('ai-chat-log');if(!log)return;const div=document.createElement('div');div.className=`ai-message ${role}`;div.textContent=text;log.appendChild(div);return div}
+function scrollAiToBottom(){const el=$('ai-chat-scroll');if(el)el.scrollTo({top:el.scrollHeight,behavior:'smooth'})}
+function appendAiError(detail){const log=$('ai-chat-log');if(!log)return;const div=document.createElement('div');div.className='ai-error-card';div.innerHTML=`<strong>수정구슬의 연결이 잠시 막혔어요.</strong><div>연결 상태를 확인한 뒤 다시 시도해보세요.</div><div class="ai-error-detail">${esc(detail||'알 수 없는 오류')}</div>`;log.appendChild(div)}
+async function loadAiLanding(){
+  const log=$('ai-chat-log');if(!log)return;
+  if(log.dataset.welcomed==='1')return;
+  log.dataset.welcomed='1';state.aiBusy=false;state.aiChatHistory=[];state.aiLastError='';
+  log.innerHTML=`<div class="ai-welcome-card"><div class="ai-welcome-top"><div class="ai-welcome-mark">✦</div><div><div class="ai-welcome-title">대마법사가 기록실을 열었습니다.</div><div class="ai-welcome-copy">급식 · 하루 시간표 · 학사일정을 모두 살펴보고 질문에 답할 준비가 되었노라.</div></div></div><div class="ai-suggestion-row"><button class="ai-suggestion" onclick="useAiSuggestion('오늘 중요한 것만 알려줘.')">오늘 중요한 것</button><button class="ai-suggestion" onclick="useAiSuggestion('이번 주 학사일정만 정리해줘.')">이번 주 일정</button><button class="ai-suggestion" onclick="useAiSuggestion('오늘 시간표를 순서대로 알려줘.')">오늘 시간표</button></div></div>`;
+  scrollAiToBottom();
+}
+
+function useAiSuggestion(q){const input=$('ai-chat-input');if(input){input.value=q;sendAiChat()}}
 async function sendAiChat(){
-    const input=$('ai-chat-input'); const q=input.value.trim(); if(!q) return;
-    const log=$('chat-log');
-    if(!log){ await openAiModal(); }
-    const target=$('chat-log');
-    const user=document.createElement('div'); user.className='chat-user'; user.textContent=q; target.appendChild(user); input.value='';
-    const ai=document.createElement('div'); ai.className='chat-ai'; ai.textContent='대마법사가 고대의 식단서를 뒤지는 중이니라...'; target.appendChild(ai); target.scrollIntoView({block:'end'});
-    const system=`너는 판타지 세계의 대마법사다. 오늘 급식(${state.todayMenuText})에 대해 학생의 질문에 친근하게 답하라. 메뉴에 없는 영양정보나 사실을 지어내지 말고, 모르는 것은 모른다고 말하라. 말투는 마법사답게 하되 과하지 않게.`;
-    ai.textContent=await callGemini(system,`학생의 질문: ${q}`);
+  const input=$('ai-chat-input');const q=input?.value.trim();if(!q||state.aiBusy)return;if(state.currentView!=='ai')showAiView(false);state.aiBusy=true;input.value='';appendAiMessage('user',q);const thinking=appendAiMessage('model','대마법사가 기록실을 다시 살피는 중이니라...');scrollAiToBottom();
+  const system='너는 학교 생활을 도와주는 판타지 세계의 대마법사다. 아래 컨텍스트의 급식, 시간표, 학사일정 세 가지 데이터만 근거로 질문에 답하라. 없는 사실은 만들지 말고 모르면 모른다고 하라. 질문이 오늘 날짜와 관련되면 현재 선택된 날짜를 기준으로 답하라. 마법사 말투는 조금만 사용하고 정보 전달을 우선하라.';
+  const history=state.aiChatHistory.slice(-8);const answer=await callGemini(system,`${buildContext()}\n\n학생의 질문: ${q}`,history,{maxOutputTokens:260,timeoutMs:9000});state.aiBusy=false;
+  if(answer){thinking.remove();appendAiMessage('model',answer);state.aiChatHistory.push({role:'user',text:q},{role:'assistant',text:answer})}else{thinking.remove();appendAiError(state.aiLastError)}scrollAiToBottom();
 }
 
-/* ============================================================
-   9. CUSTOM SCROLL VIEW
-   ============================================================ */
-function scrollToMain(id){
-    const scroller=$('main-scroll'), target=$(id);
-    if(!scroller || !target) return;
-    const scrollerRect=scroller.getBoundingClientRect();
-    const targetRect=target.getBoundingClientRect();
-    const top=Math.max(0, scroller.scrollTop + targetRect.top - scrollerRect.top - 18);
-    scroller.scrollTo({top,behavior:'smooth'});
-}
-function syncScrollRail(){
-    const scroller=$('main-scroll'), rail=$('dashboard-scroll-rail'), thumb=$('dashboard-scroll-thumb');
-    if(!scroller || !rail || !thumb) return;
-    const max=scroller.scrollHeight-scroller.clientHeight;
-    if(max<=4){ rail.classList.remove('visible'); return; }
-    rail.classList.add('visible');
-    const trackH=rail.clientHeight;
-    const thumbH=Math.max(46, Math.round(trackH*(scroller.clientHeight/scroller.scrollHeight)));
-    const top=Math.round((trackH-thumbH)*(scroller.scrollTop/max));
-    thumb.style.height=thumbH+'px'; thumb.style.top=top+'px';
-}
-function setupCustomScroll(){
-    const scroller=$('main-scroll');
-    if(!scroller) return;
-    scroller.addEventListener('scroll',syncScrollRail,{passive:true});
-    window.addEventListener('resize',syncScrollRail);
-    if(window.ResizeObserver) new ResizeObserver(syncScrollRail).observe(scroller);
-    setTimeout(syncScrollRail,50);
-}
-
-/* ============================================================
-   10. MODALS / UI
-   ============================================================ */
-function backdropClose(event,id){ if(event.target.id===id){ if(id==='office-modal') closeOfficePicker(); else if(id==='schedule-modal') closeScheduleModal(); else closeAiModal(); } }
-window.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeOfficePicker();closeScheduleModal();closeAiModal();} });
-window.addEventListener('keydown',e=>{
-  const active=document.activeElement;
-  if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(active?.tagName)) return;
-  const scroller=$('main-scroll'); if(!scroller || $('result-container')?.classList.contains('hidden')) return;
-  if(e.key==='PageDown'){e.preventDefault();scroller.scrollBy({top:Math.max(300,scroller.clientHeight*.78),behavior:'smooth'});}
-  if(e.key==='PageUp'){e.preventDefault();scroller.scrollBy({top:-Math.max(300,scroller.clientHeight*.78),behavior:'smooth'});}
-});
+/* ======================== MISC ======================== */
+function backdropClose(e,id){if(e.target.id!==id)return;if(id==='office-modal')closeOfficePicker();if(id==='class-picker-modal')closeClassPicker();if(id==='schedule-modal')closeScheduleModal()}
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOfficePicker();closeClassPicker();closeScheduleModal()}})
 </script>
 <script>
-(() => {
-  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduce){
-    document.querySelectorAll('.card,.wizard,.small-btn,.icon-btn').forEach(el=>{
-      el.addEventListener('pointermove',e=>{ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5; const y=(e.clientY-r.top)/r.height-.5; if(el.classList.contains('card')||el.classList.contains('wizard')) el.style.transform=`perspective(900px) rotateX(${(-y*1.5).toFixed(2)}deg) rotateY(${(x*1.8).toFixed(2)}deg)`; });
-      el.addEventListener('pointerleave',()=>{el.style.transform='';});
-    });
-  }
-  document.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; b.animate([{transform:'scale(.96)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'}); });
-})();
+(()=>{const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(!reduce){document.querySelectorAll('.glass,.meal-hero,.meal-ai,.timetable-card,.schedule-card,.setup-card').forEach(el=>{el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(1000px) rotateX(${(-y*1.1).toFixed(2)}deg) rotateY(${(x*1.4).toFixed(2)}deg)`});el.addEventListener('pointerleave',()=>el.style.transform='')})}document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;b.animate([{transform:'scale(.97)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'})})})();
 </script>
 </body>
 </html>
