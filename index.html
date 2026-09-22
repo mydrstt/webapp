@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대한민국 학교 급식 조회기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%, #090d16 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        /* Glassmorphism styling with rich specular highlights */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .glass-panel-glow {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.2);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(129, 140, 248, 0.6);
+            outline: none;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
+        }
+        /* Custom smooth horizontal scrollbar */
+        .custom-horizontal-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-horizontal-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 4px;
+        }
+        .custom-horizontal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        .custom-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="selection:bg-indigo-500 selection:text-white flex flex-col min-h-screen relative overflow-x-hidden">
+
+    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="fixed top-[40%] right-[10%] w-[300px] h-[300px] bg-pink-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <!-- Main Wrapper -->
+    <main class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative z-10 w-full max-w-7xl mx-auto">
+        
+        <!-- Wizard Container (Steps 1 & 2) -->
+        <div id="wizard-container" class="w-full max-w-xl transition-all duration-700 ease-in-out">
+            <div class="glass-panel-glow rounded-[2.5rem] p-8 md:p-12 text-center relative overflow-hidden">
+                
+                <!-- Decorative Icon Header -->
+                <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 shadow-xl shadow-indigo-500/10">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="flex justify-center items-center gap-2 mb-8">
+                    <div id="indicator-1" class="w-8 h-2 rounded-full bg-indigo-400 transition-all duration-500"></div>
+                    <div id="indicator-2" class="w-2 h-2 rounded-full bg-white/20 transition-all duration-500"></div>
+                </div>
+
+                <!-- Step 1: Office of Education -->
+                <div id="step-1" class="wizard-step space-y-6">
+                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">소속 교육청을 선택해주세요</h2>
+                    <p class="text-sm text-slate-400 font-light leading-relaxed">학교가 위치한 지역의 교육청을 선택하여 급식 데이터를 불러옵니다.</p>
+                    
+                    <!-- Custom Glassmorphism Picker Trigger Button -->
+                    <div class="relative">
+                        <button type="button" onclick="openOfficePicker()" id="office-picker-btn" class="glass-input w-full px-5 py-4 rounded-2xl text-left flex justify-between items-center text-base text-slate-400">
+                            <span id="office-selected-text">교육청을 선택하세요</span>
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <button onclick="nextStep()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300">
+                        다음 단계로
+                    </button>
+                </div>
+
+                <!-- Step 2: School Name -->
+                <div id="step-2" class="wizard-step space-y-6 hidden">
+                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">학교 이름을 입력해주세요</h2>
+                    <p class="text-sm text-slate-400 font-light leading-relaxed">재학 중인 학교명을 검색하고 목록에서 선택해주세요.</p>
+                    <div class="relative">
+                        <input type="text" id="school-input" placeholder="예: 서울고등학교, 세종고" class="glass-input w-full px-5 py-4 rounded-2xl text-base placeholder:text-slate-500">
+                    </div>
+                    <!-- School Search Results Container -->
+                    <div id="school-results" class="max-h-52 overflow-y-auto space-y-2 text-left hidden pr-1"></div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="prevStep()" class="w-1/3 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 font-semibold text-slate-300 transition-all duration-300">
+                            이전
+                        </button>
+                        <button id="search-trigger-btn" onclick="triggerSearch()" class="w-2/3 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 opacity-50 cursor-not-allowed" disabled>
+                            급식 조회하기 ✨
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Results Dashboard (Hidden initially) -->
+        <div id="result-container" class="w-full space-y-10 hidden">
+            
+            <!-- Header bar with school info and quick actions -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center glass-panel px-8 py-6 rounded-3xl gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <div>
+                        <span id="selected-school-badge" class="text-xs uppercase tracking-wider text-indigo-400 font-semibold block mb-0.5">SCHOOL MEAL SERVICE</span>
+                        <h1 id="result-school-title" class="text-xl md:text-2xl font-bold text-white">학교명</h1>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <button onclick="openAiModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-indigo-500/35 text-xs font-semibold text-indigo-200 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-indigo-500/10">
+                        <svg class="w-4 h-4 text-indigo-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        마법사의 영양 예언 🔮
+                    </button>
+                    <!-- Dedicated button to change school / reset saved info -->
+                    <button onclick="changeSchoolInfo()" class="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 transition-all duration-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        학교 변경하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Today's Lunch Section (Highlighted, Rich Objects & Detailed Stats) -->
+            <div class="glass-panel-glow rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden border-indigo-500/40">
+                <!-- Decorative background lighting -->
+                <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-indigo-500/20 to-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 pb-6 border-b border-white/10 relative z-10">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold mb-3 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span> 오늘 중식 스페셜
+                        </div>
+                        <h2 id="today-date-str" class="text-2xl md:text-3xl font-extrabold text-white">YYYY년 MM월 DD일</h2>
+                    </div>
+                    
+                    <!-- Stats Badges Object Row -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 shadow-inner">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">🔥</div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">총 칼로리</div>
+                                <div id="today-cal-badge" class="text-sm font-bold text-white">정보 없음</div>
+                            </div>
+                        </div>
+                        <div class="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 shadow-inner">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">🥗</div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">급식 유형</div>
+                                <div class="text-sm font-bold text-white">중식 (학교급식)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Menu Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10 items-center">
+                    <!-- Left: Rich Menu Items List -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <h3 class="text-xs uppercase tracking-widest text-indigo-300 font-semibold mb-2">MENU ITEMS</h3>
+                        <div id="today-menu-content" class="text-lg md:text-2xl font-medium text-slate-100 leading-relaxed space-y-2">
+                            <div class="text-slate-400 animate-pulse">오늘의 급식 메뉴를 불러오는 중입니다...</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: AI Quick Insight Card Object -->
+                    <div class="glass-panel p-6 rounded-3xl border-indigo-500/30 bg-indigo-950/30 flex flex-col justify-between space-y-4 shadow-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-indigo-300">대마법사의 오늘의 한 줄 예언</div>
+                                <div class="text-[10px] text-slate-400">마법의 영양 스크롤</div>
+                            </div>
+                        </div>
+                        <div id="ai-insight-text" class="text-sm text-slate-200 leading-relaxed font-light">
+                            🧙‍♂️ 마법사가 신비로운 식단의 기운을 읽어내고 있습니다...
+                        </div>
+                        <button onclick="openAiModal()" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-indigo-200 transition-all text-center">
+                            마법사의 비전 리포트 보기 →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Meal Horizontal Scroll Section -->
+            <div class="space-y-6 pt-4">
+                <div class="flex items-center justify-between px-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            오늘 기준 1주일간 급식 캘린더 (7일)
+                        </h3>
+                        <p class="text-xs text-slate-400 font-light mt-0.5">좌우로 스크롤하여 오늘부터 일주일간의 식단을 확인하세요 👉</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="scrollWeekly(-400)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button onclick="scrollWeekly(400)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Horizontal Scroll Container -->
+                <div id="weekly-horizontal-container" class="custom-horizontal-scroll flex gap-6 overflow-x-auto pb-6 pt-2 px-1 snap-x scroll-smooth">
+                    <!-- Dynamic Weekly Cards will be inserted here -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- AI Modal / Dialog -->
+    <div id="ai-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
+        <div class="glass-panel-glow w-full max-w-2xl rounded-[2.5rem] p-6 md:p-8 relative border-indigo-500/40 max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">대마법사의 급식 영양 비전 리포트</h3>
+                        <p class="text-xs text-slate-400">신비로운 연금술과 고대의 지식으로 오늘의 식단을 해독합니다</p>
+                    </div>
+                </div>
+                <button onclick="closeAiModal()" class="w-9 h-9 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Body Content -->
+            <div id="ai-modal-content" class="flex-1 overflow-y-auto space-y-4 pr-2 text-slate-200 text-sm leading-relaxed custom-horizontal-scroll">
+                <div class="flex flex-col items-center justify-center py-12 space-y-4 text-slate-400">
+                    <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p>🧙‍♂️ 대마법사가 수정구슬 속에서 식단의 기운을 살피는 중입니다...</p>
+                </div>
+            </div>
+
+            <!-- Chat with AI assistant input inside modal -->
+            <div class="mt-6 pt-4 border-t border-white/10">
+                <div class="flex gap-2">
+                    <input type="text" id="ai-chat-input" placeholder="마법사에게 급식에 대해 물어보세요 (예: 이 식단에 마나와 힘이 충분한가요?)" class="glass-input flex-1 px-4 py-3 rounded-xl text-sm placeholder:text-slate-500">
+                    <button onclick="sendAiChat()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-semibold text-white text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-indigo-500/20">
+                        물어보기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Glassmorphism Office Picker Modal -->
+    <div id="office-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
+        <div class="glass-panel-glow w-full max-w-lg rounded-[2.5rem] p-6 md:p-8 relative border-indigo-500/40 max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">교육청 선택</h3>
+                        <p class="text-xs text-slate-400">소속 지역의 교육청을 선택해주세요</p>
+                    </div>
+                </div>
+                <button onclick="closeOfficePicker()" class="w-9 h-9 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Office List Grid / Scroll Container -->
+            <div id="office-list-container" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-horizontal-scroll">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obfuscated API Key components to prevent direct F12 plain-text exposure
+        const _kParts = ['19817fd7', '016846ae', 'ad2e6cad', 'dc317227'];
+        function getApiKey() {
+            return _kParts.join('');
+        }
+
+        // State management
+        let state = {
+            step: 1,
+            officeCode: '',
+            officeName: '',
+            schoolCode: '',
+            schoolName: '',
+            selectedDateStr: '',
+            todayMenuText: '',
+            todayCalInfo: ''
+        };
+
+        const offices = [
+            { code: 'B10', name: '서울특별시교육청' },
+            { code: 'C10', name: '부산광역시교육청' },
+            { code: 'D10', name: '대구광역시교육청' },
+            { code: 'E10', name: '인천광역시교육청' },
+            { code: 'F10', name: '광주광역시교육청' },
+            { code: 'G10', name: '대전광역시교육청' },
+            { code: 'H10', name: '울산광역시교육청' },
+            { code: 'I10', name: '세종특별자치시교육청' },
+            { code: 'J10', name: '경기도교육청' },
+            { code: 'K10', name: '강원특별자치도교육청' },
+            { code: 'M10', name: '충청북도교육청' },
+            { code: 'N10', name: '충청남도교육청' },
+            { code: 'P10', name: '전북특별자치도교육청' },
+            { code: 'Q10', name: '전라남도교육청' },
+            { code: 'R10', name: '경상북도교육청' },
+            { code: 'S10', name: '경상남도교육청' },
+            { code: 'T10', name: '제주특별자치도교육청' }
+        ];
+
+        // On window load, check if local storage has saved school info
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedOfficeCode = localStorage.getItem('neis_office_code');
+            const savedOfficeName = localStorage.getItem('neis_office_name');
+            const savedSchoolCode = localStorage.getItem('neis_school_code');
+            const savedSchoolName = localStorage.getItem('neis_school_name');
+
+            if (savedOfficeCode && savedSchoolCode) {
+                state.officeCode = savedOfficeCode;
+                state.officeName = savedOfficeName || '';
+                state.schoolCode = savedSchoolCode;
+                state.schoolName = savedSchoolName || '';
+
+                // Instantly load result view
+                wizardContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
+                resultContainer.classList.remove('hidden');
+
+                document.getElementById('result-school-title').innerText = state.schoolName;
+                document.getElementById('selected-school-badge').innerText = `${state.officeName} · 급식 조회 정보`;
+
+                fetchMealData();
+            }
+        });
+
+        // DOM elements
+        const step1El = document.getElementById('step-1');
+        const step2El = document.getElementById('step-2');
+        const indicator1 = document.getElementById('indicator-1');
+        const indicator2 = document.getElementById('indicator-2');
+        const wizardContainer = document.getElementById('wizard-container');
+        const resultContainer = document.getElementById('result-container');
+        const schoolInput = document.getElementById('school-input');
+        const schoolResults = document.getElementById('school-results');
+        const searchTriggerBtn = document.getElementById('search-trigger-btn');
+        const officeModal = document.getElementById('office-modal');
+        const officeSelectedText = document.getElementById('office-selected-text');
+        const officeListContainer = document.getElementById('office-list-container');
+
+        // Initialize office picker list
+        function initOfficeList() {
+            officeListContainer.innerHTML = '';
+            offices.forEach(office => {
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-2xl bg-white/5 hover:bg-white/10 border ${state.officeCode === office.code ? 'border-indigo-500 bg-indigo-950/40' : 'border-white/5'} cursor-pointer transition-all flex justify-between items-center shadow-md`;
+                item.innerHTML = `
+                    <span class="font-semibold text-white text-base">${office.name}</span>
+                    <span class="text-xs px-3 py-1 rounded-xl ${state.officeCode === office.code ? 'bg-indigo-500 text-white font-bold' : 'bg-white/10 text-slate-300'}">${state.officeCode === office.code ? '선택됨' : '선택'}</span>
+                `;
+                item.onclick = () => {
+                    state.officeCode = office.code;
+                    state.officeName = office.name;
+                    officeSelectedText.innerText = office.name;
+                    officeSelectedText.classList.remove('text-slate-400');
+                    officeSelectedText.classList.add('text-white', 'font-medium');
+                    closeOfficePicker();
+                };
+                officeListContainer.appendChild(item);
+            });
+        }
+
+        function openOfficePicker() {
+            initOfficeList();
+            officeModal.classList.remove('hidden');
+            setTimeout(() => officeModal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeOfficePicker() {
+            officeModal.classList.add('opacity-0');
+            setTimeout(() => officeModal.classList.add('hidden'), 300);
+        }
+
+        // Wizard Navigation: Step 1 -> Step 2
+        function nextStep() {
+            if (!state.officeCode) {
+                showToast("소속 교육청을 선택해주세요.");
+                return;
+            }
+            state.step = 2;
+
+            step1El.classList.add('hidden');
+            step2El.classList.remove('hidden');
+            
+            indicator1.classList.remove('w-8', 'bg-indigo-400');
+            indicator1.classList.add('w-2', 'bg-white/20');
+            indicator2.classList.remove('w-2', 'bg-white/20');
+            indicator2.classList.add('w-8', 'bg-indigo-400');
+
+            schoolInput.focus();
+        }
+
+        // Wizard Navigation: Step 2 -> Step 1
+        function prevStep() {
+            state.step = 1;
+            step2El.classList.add('hidden');
+            step1El.classList.remove('hidden');
+
+            indicator2.classList.remove('w-8', 'bg-indigo-400');
+            indicator2.classList.add('w-2', 'bg-white/20');
+            indicator1.classList.remove('w-2', 'bg-white/20');
+            indicator1.classList.add('w-8', 'bg-indigo-400');
+        }
+
+        // School search event listener with debounce
+        let searchTimeout;
+        schoolInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                schoolResults.classList.add('hidden');
+                schoolResults.innerHTML = '';
+                disableSearchBtn();
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetchSchools(query);
+            }, 300);
+        });
+
+        // Fetch school list from NEIS API
+        async function fetchSchools(query) {
+            const apiKey = getApiKey();
+            const url = `https://open.neis.go.kr/hub/schoolInfo?KEY=${apiKey}&Type=json&pIndex=1&pSize=10&ATPT_OFCDC_SC_CODE=${state.officeCode}&SCHUL_NM=${encodeURIComponent(query)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.schoolInfo && data.schoolInfo[1]) {
+                    const schools = data.schoolInfo[1].row;
+                    renderSchoolResults(schools);
+                } else {
+                    schoolResults.innerHTML = `<div class="p-4 rounded-xl bg-white/5 text-slate-400 text-sm text-center">검색 결과가 없습니다.</div>`;
+                    schoolResults.classList.remove('hidden');
+                    disableSearchBtn();
+                }
+            } catch (error) {
+                console.error("School fetch error:", error);
+                schoolResults.innerHTML = `<div class="p-4 rounded-xl bg-white/5 text-rose-400 text-sm text-center">학교 정보를 불러오는 중 오류가 발생했습니다.</div>`;
+                schoolResults.classList.remove('hidden');
+                disableSearchBtn();
+            }
+        }
+
+        // Render searchable school items
+        function renderSchoolResults(schools) {
+            schoolResults.innerHTML = '';
+            schools.forEach(school => {
+                const item = document.createElement('div');
+                item.className = 'p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition-all duration-200 flex justify-between items-center shadow-md';
+                item.innerHTML = `
+                    <div>
+                        <div class="font-semibold text-white text-sm">${school.SCHUL_NM}</div>
+                        <div class="text-xs text-slate-400">${school.ORG_RDNMA || school.LCTN_SC_NM}</div>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded-xl bg-indigo-500/20 text-indigo-300 font-medium">선택</span>
+                `;
+                item.onclick = () => {
+                    state.schoolCode = school.SD_SCHUL_CODE;
+                    state.schoolName = school.SCHUL_NM;
+                    schoolInput.value = school.SCHUL_NM;
+                    schoolResults.classList.add('hidden');
+                    enableSearchBtn();
+                };
+                schoolResults.appendChild(item);
+            });
+            schoolResults.classList.remove('hidden');
+        }
+
+        function enableSearchBtn() {
+            searchTriggerBtn.disabled = false;
+            searchTriggerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function disableSearchBtn() {
+            searchTriggerBtn.disabled = true;
+            searchTriggerBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Trigger search and fetch meal info
+        function triggerSearch() {
+            if (!state.schoolCode) return;
+
+            // Save info to localStorage for future visits
+            localStorage.setItem('neis_office_code', state.officeCode);
+            localStorage.setItem('neis_office_name', state.officeName);
+            localStorage.setItem('neis_school_code', state.schoolCode);
+            localStorage.setItem('neis_school_name', state.schoolName);
+
+            wizardContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
+            resultContainer.classList.remove('hidden');
+
+            document.getElementById('result-school-title').innerText = state.schoolName;
+            document.getElementById('selected-school-badge').innerText = `${state.officeName} · 급식 조회 정보`;
+
+            fetchMealData();
+        }
+
+        // Dedicated function to change school info from the header button
+        function changeSchoolInfo() {
+            // Clear local storage
+            localStorage.removeItem('neis_office_code');
+            localStorage.removeItem('neis_office_name');
+            localStorage.removeItem('neis_school_code');
+            localStorage.removeItem('neis_school_name');
+
+            // Reset state
+            state.schoolCode = '';
+            state.schoolName = '';
+            state.officeCode = '';
+            state.officeName = '';
+            officeSelectedText.innerText = '교육청을 선택하세요';
+            officeSelectedText.classList.remove('text-white', 'font-medium');
+            officeSelectedText.classList.add('text-slate-400');
+
+            schoolInput.value = '';
+            schoolResults.classList.add('hidden');
+            disableSearchBtn();
+
+            resultContainer.classList.add('hidden');
+            wizardContainer.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
+            prevStep();
+        }
+
+        // Reset wizard
+        function resetWizard() {
+            changeSchoolInfo();
+        }
+
+        // Fetch Meal Service info from NEIS API
+        async function fetchMealData() {
+            const apiKey = getApiKey();
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            const startYMD = `${year}${month}01`;
+            const endYMD = `${year}${month}31`;
+
+            const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${apiKey}&Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${state.officeCode}&SD_SCHUL_CODE=${state.schoolCode}&MLSV_FROM_YMD=${startYMD}&MLSV_TO_YMD=${endYMD}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.mealServiceDietInfo && data.mealServiceDietInfo[1]) {
+                    const mealRows = data.mealServiceDietInfo[1].row;
+                    processMealData(mealRows, `${year}${month}${day}`);
+                } else {
+                    renderWeeklyEmptyState(`${year}${month}${day}`);
+                }
+            } catch (error) {
+                console.error("Meal fetch error:", error);
+                renderNoMealData("급식 정보를 불러오는 중 네트워크 오류가 발생했습니다.");
+            }
+        }
+
+        // Process and display meal data with strict 7-day cards (filling missing dates)
+        function processMealData(rows, todayYMD) {
+            const todayFormatted = `${todayYMD.slice(0,4)}년 ${todayYMD.slice(4,6)}월 ${todayYMD.slice(6,8)}일`;
+            document.getElementById('today-date-str').innerText = todayFormatted;
+
+            // Find today's lunch (MMEAL_SC_CODE === '2' for lunch)
+            const todayMeal = rows.find(row => row.MLSV_YMD === todayYMD && row.MMEAL_SC_CODE === '2');
+            
+            const todayMenuContainer = document.getElementById('today-menu-content');
+            const todayCalBadge = document.getElementById('today-cal-badge');
+
+            if (todayMeal) {
+                state.todayMenuText = todayMeal.DDISH_NM.replace(/<br\/>/g, '\n').replace(/\([0-9\.]+\)/g, '');
+                state.todayCalInfo = todayMeal.CAL_INFO || '칼로리 정보 없음';
+
+                const menuItems = todayMeal.DDISH_NM.split('<br/>').map(item => item.replace(/\([0-9\.]+\)/g, '').trim()).filter(Boolean);
+                todayMenuContainer.innerHTML = `
+                    <div class="flex flex-wrap gap-2.5">
+                        ${menuItems.map(item => `
+                            <span class="px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-base md:text-lg font-medium transition-all shadow-sm">
+                                ✨ ${item}
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+                todayCalBadge.innerText = state.todayCalInfo;
+
+                fetchAiQuickInsight(state.todayMenuText);
+            } else {
+                state.todayMenuText = "오늘 등록된 중식 급식 정보가 없습니다.";
+                todayMenuContainer.innerHTML = `<span class="text-slate-400">오늘 등록된 중식 급식 정보가 없습니다.</span>`;
+                todayCalBadge.innerText = '정보 없음';
+                document.getElementById('ai-insight-text').innerText = '오늘 등록된 식단 정보가 없습니다.';
+            }
+
+            // Generate exactly 7 days starting from today (today + 6 upcoming days = 7 tabs)
+            const horizontalContainer = document.getElementById('weekly-horizontal-container');
+            horizontalContainer.innerHTML = '';
+
+            const now = new Date(parseInt(todayYMD.slice(0,4)), parseInt(todayYMD.slice(4,6)) - 1, parseInt(todayYMD.slice(6,8)));
+
+            for (let i = 0; i < 7; i++) {
+                const targetDate = new Date(now);
+                targetDate.setDate(now.getDate() + i);
+
+                const y = targetDate.getFullYear();
+                const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+                const d = String(targetDate.getDate()).padStart(2, '0');
+                const ymdStr = `${y}${m}${d}`;
+                const dateDisplayStr = `${m}월 ${d}일`;
+                const isToday = (i === 0);
+
+                // Find meal for this specific date
+                const meal = rows.find(row => row.MLSV_YMD === ymdStr && row.MMEAL_SC_CODE === '2');
+
+                const card = document.createElement('div');
+                card.className = `snap-start shrink-0 w-[280px] md:w-[320px] glass-panel rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:border-indigo-500/50 hover:scale-[1.02] ${isToday ? 'border-indigo-500/80 bg-gradient-to-b from-indigo-950/50 to-indigo-900/20 shadow-xl shadow-indigo-500/10 ring-1 ring-indigo-500/30' : ''}`;
+
+                if (meal) {
+                    const menuList = meal.DDISH_NM.split('<br/>').map(item => item.replace(/\([0-9\.]+\)/g, '').trim()).filter(Boolean);
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+                                <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
+                                <span class="text-xs font-medium text-slate-400">${meal.CAL_INFO || ''}</span>
+                            </div>
+                            <div class="space-y-2 mb-6 min-h-[160px]">
+                                ${menuList.map(item => `<div class="text-sm text-slate-200 font-light flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>${item}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
+                            <span>중식 메뉴</span>
+                            <span class="text-indigo-400 font-medium">NEIS Verified</span>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+                                <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
+                                <span class="text-xs font-medium text-slate-400">-</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center text-center py-12 space-y-3 min-h-[160px]">
+                                <div class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 text-sm">🍽️</div>
+                                <p class="text-sm text-slate-400 font-light">오늘은 급식이 없습니다!</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
+                            <span>중식 메뉴</span>
+                            <span class="text-slate-500">정보 없음</span>
+                        </div>
+                    `;
+                }
+                horizontalContainer.appendChild(card);
+            }
+        }
+
+        function renderWeeklyEmptyState(todayYMD) {
+            const todayFormatted = `${todayYMD.slice(0,4)}년 ${todayYMD.slice(4,6)}월 ${todayYMD.slice(6,8)}일`;
+            document.getElementById('today-date-str').innerText = todayFormatted;
+            document.getElementById('today-menu-content').innerHTML = `<span class="text-slate-400">오늘 등록된 중식 급식 정보가 없습니다.</span>`;
+            document.getElementById('today-cal-badge').innerText = '정보 없음';
+
+            const horizontalContainer = document.getElementById('weekly-horizontal-container');
+            horizontalContainer.innerHTML = '';
+            const now = new Date(parseInt(todayYMD.slice(0,4)), parseInt(todayYMD.slice(4,6)) - 1, parseInt(todayYMD.slice(6,8)));
+
+            for (let i = 0; i < 7; i++) {
+                const targetDate = new Date(now);
+                targetDate.setDate(now.getDate() + i);
+                const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+                const d = String(targetDate.getDate()).padStart(2, '0');
+                const dateDisplayStr = `${m}월 ${d}일`;
+                const isToday = (i === 0);
+
+                const card = document.createElement('div');
+                card.className = `snap-start shrink-0 w-[280px] md:w-[320px] glass-panel rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 ${isToday ? 'border-indigo-500/80 bg-gradient-to-b from-indigo-950/50 to-indigo-900/20 shadow-xl' : ''}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+                            <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
+                            <span class="text-xs font-medium text-slate-400">-</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center text-center py-12 space-y-3 min-h-[160px]">
+                            <div class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 text-sm">🍽️</div>
+                            <p class="text-sm text-slate-400 font-light">오늘은 급식이 없습니다!</p>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
+                        <span>중식 메뉴</span>
+                        <span class="text-slate-500">정보 없음</span>
+                    </div>
+                `;
+                horizontalContainer.appendChild(card);
+            }
+        }
+
+        // Scroll horizontal weekly container smoothly
+        function scrollWeekly(offset) {
+            const container = document.getElementById('weekly-horizontal-container');
+            container.scrollBy({ left: offset, behavior: 'smooth' });
+        }
+
+        function renderNoMealData(msg = "이번 달 등록된 급식 정보가 없습니다.") {
+            document.getElementById('today-menu-content').innerHTML = `<span class="text-slate-400">${msg}</span>`;
+            document.getElementById('weekly-horizontal-container').innerHTML = `<div class="w-full text-center py-12 text-slate-400 glass-panel rounded-3xl">${msg}</div>`;
+        }
+
+        // --- GEMINI API INTEGRATION WITH EMBEDDED FALLBACK KEY & STANDALONE FETCH ---
+        const _aiKeyParts = ['AQ.Ab8RN6IrNCPIDKCsw2wUtDIUUqU3hcUFdqHfzhvusMma6He', '-aQ'];
+        function getAiKey() {
+            return _aiKeyParts.join('');
+        }
+
+        async function callGeminiApi(systemPrompt, userPrompt) {
+            const apiKey = getAiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            let delay = 1000;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text;
+                    }
+                } catch (err) {
+                    // Silent retry
+                }
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+            return "마법의 수정구슬에 안개가 끼어 답변을 불러오지 못했노라...";
+        }
+
+        async function fetchAiQuickInsight(menuText) {
+            const insightText = document.getElementById('ai-insight-text');
+            insightText.innerText = "🧙‍♂️ 대마법사가 오늘의 메뉴에서 신비로운 영양의 기운을 읽는 중...";
+
+            const systemPrompt = "너는 지혜롭고 고결하며 약간은 연륜 있는 판타지 세계관의 대마법사이다. 학생들에게 오늘의 급식 메뉴를 보며 마법사의 말투('~하노라', '~일지니', '오오', '마나여' 등)로 친근하고 유익한 영양 조언이나 예언을 40자 내외로 짧고 멋지게 내려주어라.";
+            const userPrompt = `오늘의 메뉴:\n${menuText}`;
+
+            const reply = await callGeminiApi(systemPrompt, userPrompt);
+            insightText.innerText = reply;
+        }
+
+        async function openAiModal() {
+            const modal = document.getElementById('ai-modal');
+            const content = document.getElementById('ai-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+
+            if (!state.todayMenuText) {
+                content.innerHTML = `<div class="p-4 text-center text-slate-400">수정구슬에 오늘의 식단이 비치지 않는구나...</div>`;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 space-y-4 text-slate-400">
+                    <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p>🧙‍♂️ 대마법사가 오늘의 식단을 연금술적으로 해독하고 있느니라...</p>
+                </div>
+            `;
+
+            const systemPrompt = "너는 지혜롭고 위대한 대마법사이다. 사용자가 제공한 학교 급식 메뉴와 칼로리 정보를 바탕으로 1) 연금술적 영양 밸런스 평가, 2) 하이라이트 재료가 주는 마력(영양소), 3) 하루를 무사히 버티기 위한 마법의 섭취 조언을 마법사 말투('~하노라', '~재앙을 막아줄지니', '오오')를 사용하여 신비롭고 친근한 마크다운 형식으로 작성해 주어라.";
+            const userPrompt = `학교명: ${state.schoolName}\n칼로리: ${state.todayCalInfo}\n메뉴:\n${state.todayMenuText}`;
+
+            const report = await callGeminiApi(systemPrompt, userPrompt);
+            
+            content.innerHTML = `
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4 shadow-xl">
+                    <div class="text-white font-bold text-base flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ${state.schoolName}의 마법 영양 비전 리포트
+                    </div>
+                    <div class="text-slate-300 space-y-2 whitespace-pre-line font-light leading-relaxed">${report}</div>
+                </div>
+            `;
+        }
+
+        function closeAiModal() {
+            const modal = document.getElementById('ai-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        async function sendAiChat() {
+            const input = document.getElementById('ai-chat-input');
+            const content = document.getElementById('ai-modal-content');
+            const question = input.value.trim();
+            if (!question) return;
+
+            input.value = '';
+            
+            const userBubble = document.createElement('div');
+            userBubble.className = 'p-4 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-100 ml-8 text-right shadow-md';
+            userBubble.innerText = question;
+            content.appendChild(userBubble);
+            content.scrollTop = content.scrollHeight;
+
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 mr-8 flex items-center gap-2 shadow-md';
+            loadingBubble.innerHTML = `<div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div> 🧙‍♂️ 대마법사가 고대의 도서관에서 답을 찾는 중...`;
+            content.appendChild(loadingBubble);
+            content.scrollTop = content.scrollHeight;
+
+            const systemPrompt = `너는 지혜롭고 위대한 대마법사이다. 오늘의 급식 메뉴(${state.todayMenuText})에 대해 어린 모험가(학생)가 묻는 질문에 마법사 말투('~하노라', '~구만', '오오')로 유쾌하고 지혜롭게 답변해주어라.`;
+            const userPrompt = `모험가의 질문: ${question}`;
+
+            const reply = await callGeminiApi(systemPrompt, userPrompt);
+            loadingBubble.className = 'p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-200 mr-8 leading-relaxed font-light shadow-md';
+            loadingBubble.innerText = reply;
+            content.scrollTop = content.scrollHeight;
+        }
+
+        // Custom toast notification replacing alert()
+        function showToast(message) {
+            const existingToast = document.getElementById('custom-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'custom-toast';
+            toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 z-50 glass-panel px-6 py-3 rounded-2xl text-sm font-medium text-white shadow-2xl border-white/20 animate-bounce';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
