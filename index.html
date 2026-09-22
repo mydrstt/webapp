@@ -1,892 +1,579 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대한민국 학교 급식 조회기</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%, #090d16 100%);
-            min-height: 100vh;
-            color: #f8fafc;
-        }
-        /* Glassmorphism styling with rich specular highlights */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .glass-panel-glow {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.2);
-        }
-        .glass-input {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-input:focus {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(129, 140, 248, 0.6);
-            outline: none;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
-        }
-        /* Custom smooth horizontal scrollbar */
-        .custom-horizontal-scroll::-webkit-scrollbar {
-            height: 8px;
-        }
-        .custom-horizontal-scroll::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 4px;
-        }
-        .custom-horizontal-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-        }
-        .custom-horizontal-scroll::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학교 생활 기록실 — 급식 · 시간표 · 학사일정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#f3f7ff;--ink:#172033;--muted:#758096;--glass:rgba(255,255,255,.56);--glass-strong:rgba(255,255,255,.76);
+  --line:rgba(255,255,255,.72);--blue:#3d8bfd;--cyan:#49c9f5;--violet:#9a7cff;--pink:#ff7bbd;--yellow:#ffd66b;
+  --shadow:0 24px 70px rgba(72,96,150,.16);--soft-shadow:0 10px 32px rgba(72,96,150,.10);
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Pretendard",system-ui,sans-serif;color:var(--ink);background:#eef4ff;letter-spacing:-.025em;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+::selection{background:rgba(61,139,253,.18)}
+.hidden{display:none!important}
+
+/* Background — kept intentionally close to the current Liquid Glass look */
+.app-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:linear-gradient(145deg,#f9fbff 0%,#eef5ff 42%,#f8f0ff 100%)}
+.orb{position:absolute;border-radius:999px;filter:blur(2px);opacity:.72;animation:float 12s ease-in-out infinite}
+.orb.a{width:420px;height:420px;left:-120px;top:-160px;background:radial-gradient(circle at 35% 35%,#b8e8ff,rgba(120,178,255,.22) 55%,transparent 72%)}
+.orb.b{width:460px;height:460px;right:-140px;top:100px;background:radial-gradient(circle at 40% 40%,#e6c5ff,rgba(191,151,255,.18) 58%,transparent 74%);animation-delay:-4s}
+.orb.c{width:360px;height:360px;left:34%;bottom:-190px;background:radial-gradient(circle at 45% 35%,#ffe3a8,rgba(255,205,121,.14) 60%,transparent 74%);animation-delay:-7s}
+.noise{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E")}
+.pointer-glow{position:fixed;z-index:2;width:260px;height:260px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(125,180,255,.18),transparent 68%);transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:left .12s ease-out,top .12s ease-out}
+
+/* Liquid Glass */
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(255,255,255,.42));border:1px solid rgba(255,255,255,.78);box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.85);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%)}
+.topbar{position:fixed;z-index:50;top:14px;left:50%;transform:translateX(-50%);width:min(1180px,calc(100% - 28px));height:62px;border-radius:22px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.82);box-shadow:0 12px 42px rgba(69,91,139,.12),inset 0 1px rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%)}
+.topbar-inner{height:100%;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}.brand-mark{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:white;font-size:18px;background:linear-gradient(145deg,#77baff,#6b83ff 55%,#a779ff);box-shadow:0 7px 18px rgba(93,137,244,.28),inset 0 1px rgba(255,255,255,.55)}
+.brand-copy{min-width:0}.brand-title{font-size:15px;font-weight:800;line-height:1}.brand-sub{font-size:10px;color:#8490a4;margin-top:5px;white-space:nowrap}.top-actions{display:flex;gap:7px}
+.icon-btn,.small-btn,.nav-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(255,255,255,.82);background:rgba(255,255,255,.55);color:#516079;border-radius:14px;box-shadow:0 5px 16px rgba(67,88,130,.08),inset 0 1px rgba(255,255,255,.9);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,background .22s}
+.icon-btn{width:40px;height:40px}.small-btn{padding:10px 13px;font-size:11px;font-weight:750}.icon-btn:hover,.small-btn:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.015);background:rgba(255,255,255,.82);box-shadow:0 10px 24px rgba(67,88,130,.13),inset 0 1px white}.icon-btn:active,.small-btn:active{transform:scale(.96)}
+
+/* App viewport: the page itself never scrolls; only this custom scroll view does. */
+.page{position:relative;z-index:5;width:min(1180px,calc(100% - 28px));height:100dvh;margin:0 auto;padding:92px 0 10px;overflow:hidden}
+.main-scroll{height:calc(100dvh - 102px);overflow-y:auto;overflow-x:hidden;padding:3px 4px 72px;scroll-behavior:smooth;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none}
+.main-scroll::-webkit-scrollbar{display:none;width:0;height:0}
+.scroll-rail{position:fixed;z-index:45;right:max(8px,calc((100vw - 1240px)/2));top:112px;bottom:26px;width:8px;display:flex;align-items:stretch;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s ease}
+.scroll-rail.visible{opacity:1}.scroll-track{position:absolute;inset:0;width:4px;margin:auto;border-radius:999px;background:rgba(121,145,190,.11);border:1px solid rgba(255,255,255,.45);backdrop-filter:blur(10px)}
+.scroll-thumb{position:absolute;left:1px;width:6px;min-height:38px;border-radius:999px;background:linear-gradient(180deg,rgba(88,159,255,.58),rgba(146,118,246,.58));box-shadow:0 4px 14px rgba(82,119,211,.18),inset 0 1px rgba(255,255,255,.7);transition:top .1s linear,height .1s linear}
+
+.dashboard{display:flex;flex-direction:column;gap:38px;min-height:100%}
+.school-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:5px 4px 2px;min-height:62px}.school-meta{display:flex;align-items:center;gap:12px;min-width:0}
+.school-symbol{width:45px;height:45px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.62);border:1px solid white;box-shadow:var(--soft-shadow);color:#6b8dff;font-size:18px}
+.eyebrow{font-size:9px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:#8793a9}.school-name{font-size:25px;font-weight:850;letter-spacing:-.055em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.school-detail{font-size:11px;color:#8994a7;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.header-actions{display:flex;gap:7px;flex-shrink:0}
+
+.section-block{display:flex;flex-direction:column;gap:12px}.section-kicker{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px}.section-title{font-size:17px;font-weight:850;letter-spacing:-.045em}.section-sub{font-size:10px;color:#8994a7;margin-top:4px}.section-side{display:flex;align-items:center;gap:6px;flex-shrink:0}.section-index{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border-radius:999px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.7);font-size:8px;font-weight:850;letter-spacing:.1em;color:#94a0b2}
+
+.today-grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(300px,.78fr);gap:15px;align-items:stretch}
+.card{position:relative;border-radius:27px;overflow:hidden}
+.today-card{padding:31px 30px 28px;min-height:318px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.5));border:1px solid rgba(255,255,255,.88);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(150%);-webkit-backdrop-filter:blur(25px) saturate(150%)}
+.today-card:before{content:"";position:absolute;width:290px;height:290px;right:-120px;top:-125px;border-radius:50%;background:radial-gradient(circle,#bfe4ff,transparent 68%);opacity:.64;pointer-events:none}
+.date-row{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.date-big{font-size:30px;font-weight:850;letter-spacing:-.06em}.date-small{font-size:12px;color:#8290a5;margin-top:7px}.today-tag{padding:8px 11px;border-radius:999px;background:rgba(89,145,255,.1);color:#4f7fe7;font-size:9px;font-weight:850;letter-spacing:.1em;flex-shrink:0}
+.menu-heading{font-size:9px;letter-spacing:.12em;color:#9aa5b7;font-weight:800;margin-top:31px;margin-bottom:12px}.menu-list{display:flex;flex-wrap:wrap;gap:8px;max-width:80%;padding-right:4px;min-height:84px;align-content:flex-start}.menu-chip{padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(68,92,137,.07);font-size:11px;color:#43516a;line-height:1.25;white-space:nowrap}
+.calorie{position:absolute;right:30px;bottom:27px;text-align:right}.calorie-label{font-size:9px;color:#96a0b1}.calorie-value{font-size:24px;font-weight:850;color:#456fe0;margin-top:3px;letter-spacing:-.035em}
+
+.ai-card{padding:28px 27px 25px;min-height:318px;background:linear-gradient(145deg,rgba(245,250,255,.82),rgba(235,229,255,.56));border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(25px) saturate(160%);-webkit-backdrop-filter:blur(25px) saturate(160%);display:flex;flex-direction:column;justify-content:space-between}
+.ai-card:after{content:"✦";position:absolute;right:15px;top:6px;font-size:96px;line-height:1;color:rgba(133,117,255,.08);transform:rotate(15deg);pointer-events:none}.ai-top{display:flex;justify-content:space-between;gap:14px}.ai-label{font-size:9px;letter-spacing:.12em;font-weight:850;color:#8b80d6}.ai-title{font-size:20px;font-weight:850;margin-top:7px}.ai-mark{width:37px;height:37px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#9e8aff,#6e9cff);box-shadow:0 8px 18px rgba(123,116,236,.22);flex-shrink:0}.ai-copy{position:relative;z-index:2;margin-top:22px;font-size:13px;line-height:1.75;color:#53617a;max-width:95%;min-height:88px;display:flex;align-items:flex-start}.ai-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:13px}.ai-footer-note{font-size:9px;color:#8994a7;line-height:1.45;max-width:44%}.ai-button{border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.74);border:1px solid white;color:#6a65b9;font-size:10px;font-weight:800;box-shadow:0 5px 15px rgba(85,75,160,.08);transition:.2s;white-space:nowrap}.ai-button:hover{transform:translateY(-1px);background:white}
+
+.week-wrap{display:flex;flex-direction:column;gap:12px}.week-card{padding:12px;border-radius:26px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.78);box-shadow:var(--soft-shadow),inset 0 1px white;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.week-scroller{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;padding:1px 1px 3px}.week-scroller::-webkit-scrollbar{display:none;width:0;height:0}
+.week-item,.week-day{flex:0 0 182px;min-height:112px;padding:14px;border-radius:19px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.72);color:#53617a;text-align:left;transition:.25s cubic-bezier(.2,.8,.2,1);box-shadow:0 4px 14px rgba(72,94,140,.05)}
+.week-item:hover,.week-day:hover{transform:translateY(-3px);background:rgba(255,255,255,.78);box-shadow:0 12px 24px rgba(72,94,140,.1)}.week-item.active,.week-day.active{background:linear-gradient(145deg,#eaf5ff,#f0ecff);border-color:rgba(108,148,255,.35);box-shadow:0 10px 25px rgba(88,125,220,.13)}
+.day-top{display:flex;justify-content:space-between;font-size:9px;color:#94a0b3}.day-num{font-size:20px;font-weight:850;color:#31405b}.day-meal{margin-top:11px;font-size:10px;line-height:1.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.day-cal{margin-top:7px;font-size:9px;color:#8c98aa}
+
+.school-life{padding-bottom:20px}.planner-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;align-items:stretch}.schedule-card,.timetable-card{padding:22px 22px 21px;min-height:335px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(255,255,255,.46));border:1px solid rgba(255,255,255,.86);box-shadow:var(--shadow),inset 0 1px white;backdrop-filter:blur(23px);-webkit-backdrop-filter:blur(23px)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.card-head h3{margin:0;font-size:15px;font-weight:850}.card-head p{margin:5px 0 0;color:#8a96a9;font-size:9px;line-height:1.45;max-width:280px}.month-nav{display:flex;align-items:center;gap:5px}.nav-btn{width:30px;height:30px;border-radius:10px;font-size:12px}.month-label{font-size:10px;font-weight:800;color:#66738a;min-width:72px;text-align:center}
+.schedule-list{margin-top:17px;display:grid;gap:8px}.event{display:grid;grid-template-columns:55px minmax(0,1fr);gap:11px;align-items:center;padding:10px 10px;border-radius:14px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.55);min-height:50px}.event-date{font-size:10px;color:#8c98aa;font-weight:750;line-height:1.35}.event-date.today-event{color:#477fe9}.event-title{font-size:11px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event-desc{font-size:8.5px;color:#98a2b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.more-btn{margin-top:12px;width:100%;height:34px;border-radius:12px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:#6c7a91;font-size:9px;font-weight:800;transition:.2s}.more-btn:hover{background:rgba(255,255,255,.8);transform:translateY(-1px)}
+.timetable-controls{display:flex;gap:7px;margin-top:16px}.control{appearance:none;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.58);border-radius:12px;padding:8px 10px;color:#607089;font-size:10px;outline:none;box-shadow:inset 0 1px white;min-width:88px}.timetable-scroll{margin-top:13px;overflow:visible}.timetable{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed}.timetable th,.timetable td{height:34px;border-radius:9px;text-align:center;background:rgba(255,255,255,.42);font-size:8px;color:#64728a;padding:3px}.timetable th{background:rgba(227,237,255,.64);font-weight:850}.timetable td{font-size:9px}.timetable .period-cell{width:45px;background:rgba(255,255,255,.26);color:#96a0b0}.subject{font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.subject-room{font-size:7px;color:#9ca6b5;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.data-status{font-size:9px;color:#98a3b5;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.65)}
+
+/* Wizard */
+.wizard-wrap{min-height:calc(100dvh - 112px);display:grid;place-items:center;padding:10px 0 40px}.wizard{width:min(620px,100%);border-radius:30px;padding:1px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.55));box-shadow:0 35px 100px rgba(74,99,160,.17);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}.wizard>div{border-radius:29px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.8)}.wizard-top{padding:28px 28px 21px;display:flex;justify-content:space-between;gap:18px}.wizard-title{font-size:29px;font-weight:850;letter-spacing:-.06em;margin-top:7px}.wizard-note{font-size:11px;line-height:1.65;color:#8490a4;margin-top:7px;max-width:480px}.step-count{padding:7px 10px;border-radius:999px;background:rgba(104,142,255,.1);color:#5d78cc;font-size:9px;font-weight:850;white-space:nowrap}.wizard-body{padding:25px 28px 28px}.progress{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:25px}.progress span{height:4px;border-radius:99px;background:rgba(120,138,172,.12)}.progress span.active{background:linear-gradient(90deg,#62a9ff,#9b85ff)}.field-label{display:block;font-size:10px;font-weight:800;color:#69778f;margin-bottom:8px}.input,.picker{width:100%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.54);color:#2d3a53;border-radius:15px;padding:14px 15px;outline:none;box-shadow:inset 0 1px white,0 6px 16px rgba(76,99,145,.05);transition:.2s}.input:focus,.picker:focus{border-color:rgba(90,145,255,.55);box-shadow:0 0 0 4px rgba(90,145,255,.08),inset 0 1px white}.primary,.secondary{width:100%;border-radius:15px;padding:13px 15px;font-weight:800;font-size:11px;transition:.22s}.primary{color:#fff;background:linear-gradient(135deg,#64aaff,#7e8fff 55%,#a57eff);box-shadow:0 10px 25px rgba(101,132,241,.2)}.primary:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(101,132,241,.25)}.primary:disabled{opacity:.42;transform:none;cursor:not-allowed}.secondary{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);color:#738096}.school-results{margin-top:8px;max-height:160px;overflow:auto;scrollbar-width:none}.school-results::-webkit-scrollbar{display:none}.school-item{display:block;width:100%;padding:10px 12px;text-align:left;border-radius:12px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.7);margin-bottom:5px;color:#3c4960}.school-item small{display:block;color:#8c97a8;margin-top:3px;font-size:8px}
+
+/* Glass popups — all popup scrolling is scrollbar-free */
+.modal-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(42,57,88,.18);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.modal{width:min(720px,calc(100vw - 32px));max-height:min(80dvh,760px);display:flex;flex-direction:column;border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.86),rgba(245,248,255,.72));border:1px solid rgba(255,255,255,.92);box-shadow:0 35px 100px rgba(45,65,110,.22),inset 0 1px white;backdrop-filter:blur(35px) saturate(150%);-webkit-backdrop-filter:blur(35px) saturate(150%);animation:pop .34s cubic-bezier(.16,1,.3,1)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 19px;border-bottom:1px solid rgba(118,136,170,.1);flex-shrink:0}.modal-title{font-size:15px;font-weight:850}.modal-body{padding:17px 19px;overflow:auto;scrollbar-width:none;-ms-overflow-style:none}.modal-body::-webkit-scrollbar{display:none;width:0;height:0}.modal-footer{padding:13px 19px 17px;border-top:1px solid rgba(118,136,170,.1);flex-shrink:0}.office-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.office-option{padding:12px;border-radius:14px;text-align:left;background:rgba(255,255,255,.54);border:1px solid rgba(255,255,255,.8);color:#4a5870;transition:.2s}.office-option:hover{transform:translateY(-2px);background:rgba(255,255,255,.82);box-shadow:0 9px 20px rgba(74,99,145,.09)}.office-option strong{font-size:10px}.ai-report{white-space:pre-wrap;font-size:12px;line-height:1.8;color:#52617a}.chat-log{display:grid;gap:7px;margin-top:14px}.chat-user,.chat-ai{max-width:84%;padding:9px 11px;border-radius:13px;font-size:10px;line-height:1.5}.chat-user{justify-self:end;background:linear-gradient(135deg,#6caaff,#8d88ff);color:white}.chat-ai{justify-self:start;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);color:#59677d}.chat-row{display:flex;gap:7px}.chat-row .input{padding:10px 12px}.empty,.loading{padding:22px;text-align:center;color:#8d98aa;font-size:10px}
+.toast{position:fixed;z-index:200;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 15px;border-radius:999px;background:rgba(30,42,68,.82);color:#fff;font-size:10px;font-weight:750;box-shadow:0 12px 30px rgba(30,42,68,.2);backdrop-filter:blur(14px);animation:toastIn .25s ease-out}
+
+/* Motion */
+@keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(14px,-12px,0) scale(1.03)}}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+@media(max-width:900px){
+  .today-grid{grid-template-columns:1fr}.ai-card{min-height:250px}.planner-grid{grid-template-columns:1fr}.schedule-card,.timetable-card{min-height:0}.scroll-rail{right:6px}
+}
+@media(max-width:680px){
+  .page{width:calc(100% - 18px);padding-top:88px}.main-scroll{height:calc(100dvh - 98px);padding-bottom:56px}.topbar{width:calc(100% - 18px);top:9px}.brand-sub{display:none}.header-actions .small-btn:first-child{display:none}.school-name{font-size:20px}.school-header{align-items:flex-start}.header-actions{padding-top:2px}.today-card{padding:24px 22px;min-height:300px}.date-big{font-size:24px}.menu-list{max-width:100%;min-height:96px}.calorie{right:22px;bottom:22px}.ai-card{padding:23px 22px;min-height:280px}.week-item,.week-day{flex-basis:154px;min-height:104px}.planner-grid{gap:12px}.schedule-card,.timetable-card{padding:19px 17px}.card-head p{max-width:190px}.office-grid{grid-template-columns:1fr}.wizard-wrap{min-height:calc(100dvh - 100px);padding:6px 0 26px}.wizard-title{font-size:25px}.wizard-top,.wizard-body{padding-left:20px;padding-right:20px}
+}
+
+</style>
 </head>
-<body class="selection:bg-indigo-500 selection:text-white flex flex-col min-h-screen relative overflow-x-hidden">
+<body>
+<div class="app-bg"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="noise"></div></div>
+<div id="pointer-glow" class="pointer-glow"></div>
+<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">✦</div><div class="brand-copy"><div class="brand-title">학교 생활 기록실</div><div class="brand-sub">급식 · 시간표 · 학사일정</div></div></div><div class="top-actions"><button class="icon-btn" title="오늘" onclick="goToday()">⌂</button><button class="icon-btn" title="학교 변경" onclick="changeSchoolInfo()">↻</button></div></div></header>
+<main class="page">
+<section id="wizard-container" class="wizard-wrap"><div class="wizard"><div class="wizard-top"><div><div class="eyebrow">THE SCHOOL ARCHIVE</div><div class="wizard-title">학교 생활을 펼쳐보자.</div><div class="wizard-note">교육청과 학교를 한 번만 지정하면 급식, 시간표, 학사일정을 한 화면에서 볼 수 있습니다.</div></div><div id="step-count" class="step-count">01 / 02</div></div><div class="wizard-body"><div class="progress"><span id="indicator-1" class="active"></span><span id="indicator-2"></span></div><div id="step-1"><label class="field-label">학교가 속한 교육청</label><button id="office-picker-btn" class="picker" onclick="openOfficePicker()"><span id="office-selected-text">교육청을 선택하세요</span><span>⌄</span></button><div style="height:10px"></div><button class="primary" onclick="nextStep()">다음 단계</button></div><div id="step-2" class="hidden"><label class="field-label">학교 검색</label><input id="school-input" class="input" autocomplete="off" placeholder="예: 서울고등학교, 세종고등학교"><div id="school-results" class="school-results hidden"></div><div style="height:12px"></div><div style="display:grid;grid-template-columns:120px 1fr;gap:8px"><button class="secondary" onclick="prevStep()">이전</button><button id="search-trigger-btn" class="primary" disabled onclick="triggerSearch()">학교 불러오기</button></div></div></div></div></section>
+<div id="dashboard-scroll-rail" class="scroll-rail"><div class="scroll-track"></div><div id="dashboard-scroll-thumb" class="scroll-thumb"></div></div>
+<div id="main-scroll" class="main-scroll">
+<section id="result-container" class="dashboard hidden">
+<div class="school-header"><div class="school-meta"><div class="school-symbol">⌘</div><div><div id="selected-school-badge" class="eyebrow">SCHOOL ARCHIVE</div><div id="result-school-title" class="school-name">학교명</div><div id="result-school-detail" class="school-detail">교육청 · 학교급</div></div></div><div class="header-actions"><button class="small-btn" onclick="openAiModal()">✦ 대마법사에게 묻기</button><button class="small-btn" onclick="changeSchoolInfo()">학교 바꾸기</button></div></div>
+<div class="section-block"><div class="section-kicker"><div><div class="section-title">오늘의 급식</div><div class="section-sub">오늘 가장 먼저 필요한 정보.</div></div><div class="section-side"><span class="section-index">01</span><button class="small-btn" onclick="reloadDashboard()">↻ 새로고침</button></div></div><div class="today-grid">
+<article class="card today-card" id="today-card"><div class="date-row"><div><div id="today-date-str" class="date-big">날짜를 불러오는 중</div><div id="today-day-label" class="date-small">—</div></div><div class="today-tag">TODAY</div></div><div class="menu-heading">LUNCH MENU</div><div id="today-menu-content" class="menu-list"><span class="loading">급식 정보를 불러오는 중...</span></div><div class="calorie"><div class="calorie-label">오늘 중식 기준 열량</div><div id="today-cal-badge" class="calorie-value">—</div></div></article>
+<aside class="card ai-card"><div><div class="ai-top"><div><div class="ai-label">WIZARD'S NOTE</div><div class="ai-title">오늘의 한 줄 예언</div></div><div class="ai-mark">✦</div></div><div id="ai-insight-text" class="ai-copy">오늘의 식단을 확인하면 대마법사가 한 줄을 남겨드립니다.</div></div><div class="ai-footer"><span class="ai-footer-note">메뉴를 읽고 가볍게 해석합니다.</span><button class="ai-button" onclick="openAiModal()">전체 리포트 →</button></div></aside>
+</div></div>
+<div class="week-wrap"><div class="section-kicker"><div><div class="section-title">이번 주</div><div class="section-sub">날짜를 누르면 오늘의 카드가 바뀝니다.</div></div><div class="section-side"><span class="section-index">02</span><button class="icon-btn" onclick="scrollWeekly(-360)">←</button><button class="icon-btn" onclick="scrollWeekly(360)">→</button></div></div><div class="card week-card"><div id="weekly-horizontal-container" class="week-scroller"></div></div></div>
+<div class="section-block school-life"><div class="section-kicker"><div><div class="section-title">학교 생활</div><div class="section-sub">아래로 내려가면 학사일정과 시간표를 더 넓게 볼 수 있습니다.</div></div><div class="section-side"><span class="section-index">03</span><div id="data-status" class="data-status">READY</div></div></div><div class="planner-grid">
+<article class="card schedule-card"><div class="card-head"><div><h3>학사 일정</h3><p>시험 · 방학 · 행사 · 재량휴업일</p></div><div class="month-nav"><button class="nav-btn" onclick="moveScheduleMonth(-1)">←</button><div id="schedule-month-label" class="month-label">—</div><button class="nav-btn" onclick="moveScheduleMonth(1)">→</button></div></div><div id="schedule-list" class="schedule-list"><div class="loading">학사일정을 불러오는 중...</div></div><button class="more-btn" onclick="openScheduleModal()">이 달의 일정 전체 보기</button></article>
+<article class="card timetable-card"><div class="card-head"><div><h3>오늘의 시간표</h3><p>학년 · 반을 선택하면 나이스 시간표를 조회합니다.</p></div></div><div class="timetable-controls"><select id="grade-select" class="control" onchange="loadTimetable()"></select><select id="class-select" class="control" onchange="loadTimetable()"></select></div><div id="timetable-container" class="timetable-scroll"><div class="empty">학년과 반을 선택해주세요.</div></div></article>
+</div></div>
+</section>
+</div></main>
+<div id="office-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'office-modal')"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div class="modal-title">교육청 선택</div><button class="icon-btn" onclick="closeOfficePicker()">×</button></div><div class="modal-body"><div id="office-list-container" class="office-grid"></div></div></div></div>
+<div id="schedule-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'schedule-modal')"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div><div class="modal-title">학사 일정</div><div id="schedule-modal-sub" style="font-size:9px;color:#8b97aa;margin-top:3px">—</div></div><button class="icon-btn" onclick="closeScheduleModal()">×</button></div><div id="schedule-modal-content" class="modal-body"></div></div></div>
+<div id="ai-modal" class="modal-backdrop hidden" onclick="backdropClose(event,'ai-modal')"><div class="modal"><div class="modal-head"><div><div class="modal-title">대마법사의 급식 연구실</div><div style="font-size:9px;color:#8b97aa;margin-top:3px">오늘의 식단을 소재로 한 가벼운 AI 해석</div></div><button class="icon-btn" onclick="closeAiModal()">×</button></div><div id="ai-modal-content" class="modal-body"><div class="loading">수정구슬을 준비하는 중...</div></div><div class="modal-footer"><div class="chat-row"><input id="ai-chat-input" class="input" placeholder="예: 오늘 메뉴에서 눈여겨볼 음식은?" onkeydown="if(event.key==='Enter')sendAiChat()"><button class="primary" style="width:auto;white-space:nowrap;padding:10px 15px" onclick="sendAiChat()">질문</button></div></div></div></div>
+<script>
+/* ============================================================
+   1. CONFIG
+   ============================================================ */
+// 원본 파일의 키를 그대로 사용한 로컬 실험용 버전입니다.
+// 배포용으로 만들 생각이 없다면 이 구조 그대로 두어도 됩니다.
+const NEIS_API_KEY = ['19817fd7','016846ae','ad2e6cad','dc317227'].join('');
+const GEMINI_API_KEY = ['AQ.Ab8RN6IrNCPIDKCsw2wUtDIUUqU3hcUFdqHfzhvusMma6He','-aQ'].join('');
+const NEIS_BASE = 'https://open.neis.go.kr/hub';
 
-    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="fixed top-[40%] right-[10%] w-[300px] h-[300px] bg-pink-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+const offices = [
+    {name:'서울특별시교육청', code:'B10'}, {name:'부산광역시교육청', code:'C10'},
+    {name:'대구광역시교육청', code:'D10'}, {name:'인천광역시교육청', code:'E10'},
+    {name:'광주광역시교육청', code:'F10'}, {name:'대전광역시교육청', code:'G10'},
+    {name:'울산광역시교육청', code:'H10'}, {name:'세종특별자치시교육청', code:'I10'},
+    {name:'경기도교육청', code:'J10'}, {name:'강원특별자치도교육청', code:'K10'},
+    {name:'충청북도교육청', code:'M10'}, {name:'충청남도교육청', code:'N10'},
+    {name:'전북특별자치도교육청', code:'P10'}, {name:'전라남도교육청', code:'Q10'},
+    {name:'경상북도교육청', code:'R10'}, {name:'경상남도교육청', code:'S10'},
+    {name:'제주특별자치도교육청', code:'T10'}
+];
 
-    <!-- Main Wrapper -->
-    <main class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative z-10 w-full max-w-7xl mx-auto">
-        
-        <!-- Wizard Container (Steps 1 & 2) -->
-        <div id="wizard-container" class="w-full max-w-xl transition-all duration-700 ease-in-out">
-            <div class="glass-panel-glow rounded-[2.5rem] p-8 md:p-12 text-center relative overflow-hidden">
-                
-                <!-- Decorative Icon Header -->
-                <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 shadow-xl shadow-indigo-500/10">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </div>
+const state = {
+    officeCode:'', officeName:'', schoolCode:'', schoolName:'', schoolKind:'',
+    schoolData:null, mealRows:[], scheduleRows:[], timetableRows:[],
+    selectedDate: todayDate(), scheduleMonth: new Date(), todayMenuText:'', todayCalInfo:'',
+    timetableRequestKey:'',
+};
 
-                <!-- Step Indicator -->
-                <div class="flex justify-center items-center gap-2 mb-8">
-                    <div id="indicator-1" class="w-8 h-2 rounded-full bg-indigo-400 transition-all duration-500"></div>
-                    <div id="indicator-2" class="w-2 h-2 rounded-full bg-white/20 transition-all duration-500"></div>
-                </div>
+/* ============================================================
+   2. HELPERS
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function pad(n){ return String(n).padStart(2,'0'); }
+function ymd(date){ return `${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}`; }
+function fromYmd(v){ return new Date(Number(v.slice(0,4)), Number(v.slice(4,6))-1, Number(v.slice(6,8))); }
+function todayDate(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+function fmtLong(date){ return `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일`; }
+function fmtMonth(date){ return `${date.getFullYear()}년 ${date.getMonth()+1}월`; }
+function weekday(date){ return ['일','월','화','수','목','금','토'][date.getDay()]; }
+function isSameDay(a,b){ return ymd(a) === ymd(b); }
+function htmlMenu(text){
+    return String(text || '').split('<br/>').map(v => v.replace(/\([0-9\.]+\)/g,'').replace(/<[^>]+>/g,'').trim()).filter(Boolean);
+}
+function cleanHtmlText(text){ return String(text || '').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').trim(); }
+function lastDayOfMonth(year, monthIndex){ return new Date(year, monthIndex+1, 0).getDate(); }
+function showToast(message){
+    document.querySelector('.toast')?.remove();
+    const el = document.createElement('div'); el.className='toast'; el.textContent=message; document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2600);
+}
+function setStatus(text){ $('data-status').textContent=text; }
+function setLoading(el, text='불러오는 중...'){ el.innerHTML=`<div class="loading">${esc(text)}</div>`; }
 
-                <!-- Step 1: Office of Education -->
-                <div id="step-1" class="wizard-step space-y-6">
-                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">소속 교육청을 선택해주세요</h2>
-                    <p class="text-sm text-slate-400 font-light leading-relaxed">학교가 위치한 지역의 교육청을 선택하여 급식 데이터를 불러옵니다.</p>
-                    
-                    <!-- Custom Glassmorphism Picker Trigger Button -->
-                    <div class="relative">
-                        <button type="button" onclick="openOfficePicker()" id="office-picker-btn" class="glass-input w-full px-5 py-4 rounded-2xl text-left flex justify-between items-center text-base text-slate-400">
-                            <span id="office-selected-text">교육청을 선택하세요</span>
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
+async function neis(endpoint, params={}){
+    const qs = new URLSearchParams({KEY:NEIS_API_KEY, Type:'json', pIndex:'1', pSize:'1000', ...params});
+    const response = await fetch(`${NEIS_BASE}/${endpoint}?${qs.toString()}`);
+    if(!response.ok) throw new Error(`NEIS HTTP ${response.status}`);
+    const data = await response.json();
+    if(data.RESULT?.CODE && data.RESULT.CODE !== 'INFO-000') throw new Error(data.RESULT.MESSAGE || data.RESULT.CODE);
+    return data;
+}
+function extractRows(data, dataset){
+    const block = data?.[dataset];
+    if(!block) return [];
+    if(Array.isArray(block) && block[1]?.row) return block[1].row;
+    return block.row || [];
+}
 
-                    <button onclick="nextStep()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300">
-                        다음 단계로
-                    </button>
-                </div>
+/* ============================================================
+   3. INIT / LOCAL STORAGE
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('DOMContentLoaded', ()=>setupCustomScroll());
+function init(){
+    initOfficeList();
+    $('school-input').addEventListener('input', onSchoolInput);
+    const saved = {
+        officeCode:localStorage.getItem('neis_office_code'), officeName:localStorage.getItem('neis_office_name'),
+        schoolCode:localStorage.getItem('neis_school_code'), schoolName:localStorage.getItem('neis_school_name'),
+        schoolKind:localStorage.getItem('neis_school_kind')
+    };
+    if(saved.officeCode && saved.schoolCode){
+        Object.assign(state, saved);
+        state.schoolData = {SCHUL_KND_SC_NM:saved.schoolKind || ''};
+        bootDashboard().catch(err => { console.error(err); showToast('저장된 학교 데이터를 불러오지 못했습니다.'); resetWizard(); });
+    } else {
+        $('wizard-container').classList.remove('hidden');
+        $('result-container').classList.add('hidden');
+    }
+    window.addEventListener('mousemove', e=>{
+        const glow=$('pointer-glow'); glow.style.left=e.clientX+'px'; glow.style.top=e.clientY+'px';
+    });
+}
 
-                <!-- Step 2: School Name -->
-                <div id="step-2" class="wizard-step space-y-6 hidden">
-                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">학교 이름을 입력해주세요</h2>
-                    <p class="text-sm text-slate-400 font-light leading-relaxed">재학 중인 학교명을 검색하고 목록에서 선택해주세요.</p>
-                    <div class="relative">
-                        <input type="text" id="school-input" placeholder="예: 서울고등학교, 세종고" class="glass-input w-full px-5 py-4 rounded-2xl text-base placeholder:text-slate-500">
-                    </div>
-                    <!-- School Search Results Container -->
-                    <div id="school-results" class="max-h-52 overflow-y-auto space-y-2 text-left hidden pr-1"></div>
+/* ============================================================
+   4. WIZARD / SCHOOL SEARCH
+   ============================================================ */
+function initOfficeList(){
+    const container=$('office-list-container'); container.innerHTML='';
+    offices.forEach(o=>{
+        const btn=document.createElement('button'); btn.className='office-option'; btn.innerHTML=`<strong>${esc(o.name)}</strong><span style="display:block;margin-top:3px;font-size:10px;color:#747c85">${o.code}</span>`;
+        btn.onclick=()=>selectOffice(o); container.appendChild(btn);
+    });
+}
+function openOfficePicker(){ $('office-modal').classList.remove('hidden'); }
+function closeOfficePicker(){ $('office-modal').classList.add('hidden'); }
+function selectOffice(o){
+    state.officeCode=o.code; state.officeName=o.name;
+    $('office-selected-text').textContent=o.name;
+    $('office-selected-text').style.color='#f5f6f7';
+    closeOfficePicker();
+}
+function nextStep(){
+    if(!state.officeCode){ showToast('먼저 교육청을 선택해주세요.'); return; }
+    $('step-1').classList.add('hidden'); $('step-2').classList.remove('hidden');
+    $('indicator-1').classList.add('active'); $('indicator-2').classList.add('active'); $('step-count').textContent='02 / 02';
+    setTimeout(()=>$('school-input').focus(),100);
+}
+function prevStep(){
+    $('step-2').classList.add('hidden'); $('step-1').classList.remove('hidden'); $('indicator-2').classList.remove('active'); $('step-count').textContent='01 / 02';
+}
+let schoolSearchTimer=null;
+function onSchoolInput(e){
+    const q=e.target.value.trim();
+    $('search-trigger-btn').disabled=true;
+    $('school-results').classList.add('hidden');
+    clearTimeout(schoolSearchTimer);
+    if(q.length<2) return;
+    schoolSearchTimer=setTimeout(()=>fetchSchools(q),350);
+}
+async function fetchSchools(query){
+    const result=$('school-results'); result.classList.remove('hidden'); setLoading(result,'학교 목록을 찾는 중...');
+    try{
+        const data=await neis('schoolInfo',{ATPT_OFCDC_SC_CODE:state.officeCode,SCHUL_NM:query,pSize:'30'});
+        const rows=extractRows(data,'schoolInfo');
+        if(!rows.length){ result.innerHTML='<div class="empty">검색 결과가 없습니다.</div>'; return; }
+        result.innerHTML='';
+        rows.forEach(s=>{
+            const item=document.createElement('button'); item.className='school-item';
+            item.innerHTML=`<strong>${esc(s.SCHUL_NM)}</strong><small>${esc(s.ORG_RDNMA || '')} · ${esc(s.SCHUL_KND_SC_NM || '')}</small>`;
+            item.onclick=()=>selectSchool(s); result.appendChild(item);
+        });
+    }catch(err){ console.error(err); result.innerHTML='<div class="empty">학교 검색에 실패했습니다. 잠시 후 다시 시도해주세요.</div>'; }
+}
+function selectSchool(s){
+    state.schoolCode=s.SD_SCHUL_CODE; state.schoolName=s.SCHUL_NM; state.schoolKind=s.SCHUL_KND_SC_NM || '';
+    state.schoolData=s;
+    $('school-input').value=s.SCHUL_NM; $('school-results').classList.add('hidden'); $('search-trigger-btn').disabled=false;
+}
+async function triggerSearch(){
+    if(!state.schoolCode){ showToast('검색 결과에서 학교를 선택해주세요.'); return; }
+    await bootDashboard();
+}
+async function bootDashboard(){
+    localStorage.setItem('neis_office_code',state.officeCode); localStorage.setItem('neis_office_name',state.officeName);
+    localStorage.setItem('neis_school_code',state.schoolCode); localStorage.setItem('neis_school_name',state.schoolName); localStorage.setItem('neis_school_kind',state.schoolKind);
+    $('wizard-container').classList.add('hidden'); $('result-container').classList.remove('hidden');
+    $('result-school-title').textContent=state.schoolName;
+    $('result-school-detail').textContent=`${state.officeName} · ${state.schoolKind || '학교'}`;
+    setStatus('LOADING');
+    try{
+        await Promise.all([fetchMealWindow(), fetchSchedule(state.scheduleMonth)]);
+    }catch(err){ console.error(err); }
+    setupTimetableControls();
+    setStatus('READY');
+    setTimeout(syncScrollRail, 40);
+    fetchAiQuickInsight(state.todayMenuText);
+}
+function changeSchoolInfo(){
+    localStorage.removeItem('neis_school_code'); localStorage.removeItem('neis_school_name'); localStorage.removeItem('neis_school_kind');
+    state.schoolCode=''; state.schoolName=''; state.schoolKind=''; state.schoolData=null;
+    $('result-container').classList.add('hidden'); $('wizard-container').classList.remove('hidden');
+    $('step-2').classList.add('hidden'); $('step-1').classList.remove('hidden');
+    $('indicator-2').classList.remove('active'); $('step-count').textContent='01 / 02';
+    $('school-input').value=''; $('school-results').innerHTML=''; $('school-results').classList.add('hidden'); $('search-trigger-btn').disabled=true;
+}
+function resetWizard(){ changeSchoolInfo(); }
+function reloadDashboard(){ bootDashboard().catch(err=>{console.error(err);showToast('데이터를 새로 불러오지 못했습니다.');}); }
 
-                    <div class="flex gap-3 pt-2">
-                        <button onclick="prevStep()" class="w-1/3 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 font-semibold text-slate-300 transition-all duration-300">
-                            이전
-                        </button>
-                        <button id="search-trigger-btn" onclick="triggerSearch()" class="w-2/3 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 opacity-50 cursor-not-allowed" disabled>
-                            급식 조회하기 ✨
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Results Dashboard (Hidden initially) -->
-        <div id="result-container" class="w-full space-y-10 hidden">
-            
-            <!-- Header bar with school info and quick actions -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center glass-panel px-8 py-6 rounded-3xl gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    </div>
-                    <div>
-                        <span id="selected-school-badge" class="text-xs uppercase tracking-wider text-indigo-400 font-semibold block mb-0.5">SCHOOL MEAL SERVICE</span>
-                        <h1 id="result-school-title" class="text-xl md:text-2xl font-bold text-white">학교명</h1>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                    <button onclick="openAiModal()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-indigo-500/35 text-xs font-semibold text-indigo-200 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-indigo-500/10">
-                        <svg class="w-4 h-4 text-indigo-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        마법사의 영양 예언 🔮
-                    </button>
-                    <!-- Dedicated button to change school / reset saved info -->
-                    <button onclick="changeSchoolInfo()" class="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 transition-all duration-300 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        학교 변경하기
-                    </button>
-                </div>
-            </div>
-
-            <!-- Today's Lunch Section (Highlighted, Rich Objects & Detailed Stats) -->
-            <div class="glass-panel-glow rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden border-indigo-500/40">
-                <!-- Decorative background lighting -->
-                <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-indigo-500/20 to-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 pb-6 border-b border-white/10 relative z-10">
-                    <div>
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold mb-3 shadow-sm">
-                            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span> 오늘 중식 스페셜
-                        </div>
-                        <h2 id="today-date-str" class="text-2xl md:text-3xl font-extrabold text-white">YYYY년 MM월 DD일</h2>
-                    </div>
-                    
-                    <!-- Stats Badges Object Row -->
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 shadow-inner">
-                            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">🔥</div>
-                            <div>
-                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">총 칼로리</div>
-                                <div id="today-cal-badge" class="text-sm font-bold text-white">정보 없음</div>
-                            </div>
-                        </div>
-                        <div class="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 shadow-inner">
-                            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">🥗</div>
-                            <div>
-                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">급식 유형</div>
-                                <div class="text-sm font-bold text-white">중식 (학교급식)</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Menu Content Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10 items-center">
-                    <!-- Left: Rich Menu Items List -->
-                    <div class="lg:col-span-2 space-y-4">
-                        <h3 class="text-xs uppercase tracking-widest text-indigo-300 font-semibold mb-2">MENU ITEMS</h3>
-                        <div id="today-menu-content" class="text-lg md:text-2xl font-medium text-slate-100 leading-relaxed space-y-2">
-                            <div class="text-slate-400 animate-pulse">오늘의 급식 메뉴를 불러오는 중입니다...</div>
-                        </div>
-                    </div>
-
-                    <!-- Right: AI Quick Insight Card Object -->
-                    <div class="glass-panel p-6 rounded-3xl border-indigo-500/30 bg-indigo-950/30 flex flex-col justify-between space-y-4 shadow-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <div>
-                                <div class="text-xs font-bold text-indigo-300">대마법사의 오늘의 한 줄 예언</div>
-                                <div class="text-[10px] text-slate-400">마법의 영양 스크롤</div>
-                            </div>
-                        </div>
-                        <div id="ai-insight-text" class="text-sm text-slate-200 leading-relaxed font-light">
-                            🧙‍♂️ 마법사가 신비로운 식단의 기운을 읽어내고 있습니다...
-                        </div>
-                        <button onclick="openAiModal()" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-indigo-200 transition-all text-center">
-                            마법사의 비전 리포트 보기 →
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Weekly Meal Horizontal Scroll Section -->
-            <div class="space-y-6 pt-4">
-                <div class="flex items-center justify-between px-2">
-                    <div>
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            오늘 기준 1주일간 급식 캘린더 (7일)
-                        </h3>
-                        <p class="text-xs text-slate-400 font-light mt-0.5">좌우로 스크롤하여 오늘부터 일주일간의 식단을 확인하세요 👉</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="scrollWeekly(-400)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </button>
-                        <button onclick="scrollWeekly(400)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Horizontal Scroll Container -->
-                <div id="weekly-horizontal-container" class="custom-horizontal-scroll flex gap-6 overflow-x-auto pb-6 pt-2 px-1 snap-x scroll-smooth">
-                    <!-- Dynamic Weekly Cards will be inserted here -->
-                </div>
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- AI Modal / Dialog -->
-    <div id="ai-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
-        <div class="glass-panel-glow w-full max-w-2xl rounded-[2.5rem] p-6 md:p-8 relative border-indigo-500/40 max-h-[90vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white">대마법사의 급식 영양 비전 리포트</h3>
-                        <p class="text-xs text-slate-400">신비로운 연금술과 고대의 지식으로 오늘의 식단을 해독합니다</p>
-                    </div>
-                </div>
-                <button onclick="closeAiModal()" class="w-9 h-9 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <!-- Modal Body Content -->
-            <div id="ai-modal-content" class="flex-1 overflow-y-auto space-y-4 pr-2 text-slate-200 text-sm leading-relaxed custom-horizontal-scroll">
-                <div class="flex flex-col items-center justify-center py-12 space-y-4 text-slate-400">
-                    <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p>🧙‍♂️ 대마법사가 수정구슬 속에서 식단의 기운을 살피는 중입니다...</p>
-                </div>
-            </div>
-
-            <!-- Chat with AI assistant input inside modal -->
-            <div class="mt-6 pt-4 border-t border-white/10">
-                <div class="flex gap-2">
-                    <input type="text" id="ai-chat-input" placeholder="마법사에게 급식에 대해 물어보세요 (예: 이 식단에 마나와 힘이 충분한가요?)" class="glass-input flex-1 px-4 py-3 rounded-xl text-sm placeholder:text-slate-500">
-                    <button onclick="sendAiChat()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-semibold text-white text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-indigo-500/20">
-                        물어보기
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Glassmorphism Office Picker Modal -->
-    <div id="office-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
-        <div class="glass-panel-glow w-full max-w-lg rounded-[2.5rem] p-6 md:p-8 relative border-indigo-500/40 max-h-[85vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white">교육청 선택</h3>
-                        <p class="text-xs text-slate-400">소속 지역의 교육청을 선택해주세요</p>
-                    </div>
-                </div>
-                <button onclick="closeOfficePicker()" class="w-9 h-9 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <!-- Office List Grid / Scroll Container -->
-            <div id="office-list-container" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-horizontal-scroll">
-                <!-- Populated via JS -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Obfuscated API Key components to prevent direct F12 plain-text exposure
-        const _kParts = ['19817fd7', '016846ae', 'ad2e6cad', 'dc317227'];
-        function getApiKey() {
-            return _kParts.join('');
-        }
-
-        // State management
-        let state = {
-            step: 1,
-            officeCode: '',
-            officeName: '',
-            schoolCode: '',
-            schoolName: '',
-            selectedDateStr: '',
-            todayMenuText: '',
-            todayCalInfo: ''
+/* ============================================================
+   5. MEAL
+   ============================================================ */
+async function fetchMealWindow(){
+    const today=todayDate();
+    const start=new Date(today); start.setDate(today.getDate()-2);
+    const end=new Date(today); end.setDate(today.getDate()+9);
+    const data=await neis('mealServiceDietInfo',{
+        ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
+        MLSV_FROM_YMD:ymd(start), MLSV_TO_YMD:ymd(end), pSize:'200'
+    });
+    state.mealRows=extractRows(data,'mealServiceDietInfo');
+    renderTodayMeal(today); renderWeekly(today);
+    setTimeout(syncScrollRail, 30);
+}
+function mealFor(date){ return state.mealRows.find(r=>r.MLSV_YMD===ymd(date) && r.MMEAL_SC_CODE==='2'); }
+function renderTodayMeal(date){
+    const meal=mealFor(date);
+    $('today-date-str').textContent=fmtLong(date);
+    $('today-day-label').textContent=`${weekday(date)}요일 · 중식`;
+    if(!meal){
+        $('today-menu-content').innerHTML='<span style="color:#777f89;font-size:13px">등록된 중식 급식 정보가 없습니다.</span>';
+        $('today-cal-badge').textContent='정보 없음'; state.todayMenuText=''; state.todayCalInfo=''; return;
+    }
+    const menus=htmlMenu(meal.DDISH_NM);
+    $('today-menu-content').innerHTML=menus.map(m=>`<span class="menu-chip">${esc(m)}</span>`).join('');
+    $('today-cal-badge').textContent=meal.CAL_INFO || '열량 정보 없음';
+    state.todayMenuText=menus.join(', '); state.todayCalInfo=meal.CAL_INFO || '';
+}
+function renderWeekly(anchor){
+    const box=$('weekly-horizontal-container'); box.innerHTML='';
+    for(let i=-1;i<7;i++){
+        const d=new Date(anchor); d.setDate(anchor.getDate()+i);
+        const meal=mealFor(d); const menus=meal ? htmlMenu(meal.DDISH_NM) : [];
+        const btn=document.createElement('button'); btn.className=`week-day ${isSameDay(d,anchor)?'active':''}`;
+        btn.innerHTML=`<div class="day-top"><span class="day-name">${isSameDay(d,anchor)?'TODAY':weekday(d)+'요일'}</span><span class="day-num">${d.getDate()}</span></div>
+            <div class="day-meal">${menus.length ? esc(menus.slice(0,3).join(' · ')) + (menus.length>3?' …':'') : '<span style="color:#626a74">급식 없음</span>'}</div>
+            <div class="day-cal">${meal ? esc(meal.CAL_INFO || '열량 미기재') : '—'}</div>`;
+        btn.onclick=()=>{
+            state.selectedDate=d; renderTodayMeal(d); renderWeekly(d);
+            scrollToMain('today-card');
         };
+        box.appendChild(btn);
+    }
+}
+function scrollWeekly(offset){ $('weekly-horizontal-container').scrollBy({left:offset,behavior:'smooth'}); }
+function goToday(){
+    const d=todayDate(); state.selectedDate=d; renderTodayMeal(d); renderWeekly(d);
+    scrollToMain('today-card');
+}
 
-        const offices = [
-            { code: 'B10', name: '서울특별시교육청' },
-            { code: 'C10', name: '부산광역시교육청' },
-            { code: 'D10', name: '대구광역시교육청' },
-            { code: 'E10', name: '인천광역시교육청' },
-            { code: 'F10', name: '광주광역시교육청' },
-            { code: 'G10', name: '대전광역시교육청' },
-            { code: 'H10', name: '울산광역시교육청' },
-            { code: 'I10', name: '세종특별자치시교육청' },
-            { code: 'J10', name: '경기도교육청' },
-            { code: 'K10', name: '강원특별자치도교육청' },
-            { code: 'M10', name: '충청북도교육청' },
-            { code: 'N10', name: '충청남도교육청' },
-            { code: 'P10', name: '전북특별자치도교육청' },
-            { code: 'Q10', name: '전라남도교육청' },
-            { code: 'R10', name: '경상북도교육청' },
-            { code: 'S10', name: '경상남도교육청' },
-            { code: 'T10', name: '제주특별자치도교육청' }
-        ];
-
-        // On window load, check if local storage has saved school info
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedOfficeCode = localStorage.getItem('neis_office_code');
-            const savedOfficeName = localStorage.getItem('neis_office_name');
-            const savedSchoolCode = localStorage.getItem('neis_school_code');
-            const savedSchoolName = localStorage.getItem('neis_school_name');
-
-            if (savedOfficeCode && savedSchoolCode) {
-                state.officeCode = savedOfficeCode;
-                state.officeName = savedOfficeName || '';
-                state.schoolCode = savedSchoolCode;
-                state.schoolName = savedSchoolName || '';
-
-                // Instantly load result view
-                wizardContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
-                resultContainer.classList.remove('hidden');
-
-                document.getElementById('result-school-title').innerText = state.schoolName;
-                document.getElementById('selected-school-badge').innerText = `${state.officeName} · 급식 조회 정보`;
-
-                fetchMealData();
-            }
+/* ============================================================
+   6. ACADEMIC SCHEDULE
+   ============================================================ */
+async function fetchSchedule(monthDate){
+    $('schedule-month-label').textContent=fmtMonth(monthDate);
+    const start=new Date(monthDate.getFullYear(),monthDate.getMonth(),1);
+    const end=new Date(monthDate.getFullYear(),monthDate.getMonth()+1,0);
+    setLoading($('schedule-list'),'학사일정을 불러오는 중...');
+    try{
+        const data=await neis('SchoolSchedule',{
+            ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
+            AA_FROM_YMD:ymd(start), AA_TO_YMD:ymd(end), pSize:'200'
         });
+        state.scheduleRows=extractRows(data,'SchoolSchedule').sort((a,b)=>String(a.AA_YMD).localeCompare(String(b.AA_YMD)));
+        renderSchedule();
+        setTimeout(syncScrollRail, 30);
+    }catch(err){
+        console.error(err); state.scheduleRows=[];
+        $('schedule-list').innerHTML='<div class="empty">이 달의 학사일정을 불러오지 못했습니다.</div>';
+    }
+}
+function renderSchedule(){
+    const list=$('schedule-list'); list.innerHTML='';
+    if(!state.scheduleRows.length){ list.innerHTML='<div class="empty">등록된 학사일정이 없습니다.</div>'; return; }
+    const today=ymd(todayDate());
+    state.scheduleRows.slice(0,4).forEach(r=>{
+        const d=fromYmd(r.AA_YMD); const item=document.createElement('div'); item.className='event';
+        item.innerHTML=`<div class="event-date ${r.AA_YMD===today?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div>
+            <div><div class="event-title">${esc(r.EVENT_NM || '일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div>`;
+        list.appendChild(item);
+    });
+}
+function moveScheduleMonth(delta){
+    state.scheduleMonth=new Date(state.scheduleMonth.getFullYear(),state.scheduleMonth.getMonth()+delta,1);
+    fetchSchedule(state.scheduleMonth);
+}
 
-        // DOM elements
-        const step1El = document.getElementById('step-1');
-        const step2El = document.getElementById('step-2');
-        const indicator1 = document.getElementById('indicator-1');
-        const indicator2 = document.getElementById('indicator-2');
-        const wizardContainer = document.getElementById('wizard-container');
-        const resultContainer = document.getElementById('result-container');
-        const schoolInput = document.getElementById('school-input');
-        const schoolResults = document.getElementById('school-results');
-        const searchTriggerBtn = document.getElementById('search-trigger-btn');
-        const officeModal = document.getElementById('office-modal');
-        const officeSelectedText = document.getElementById('office-selected-text');
-        const officeListContainer = document.getElementById('office-list-container');
-
-        // Initialize office picker list
-        function initOfficeList() {
-            officeListContainer.innerHTML = '';
-            offices.forEach(office => {
-                const item = document.createElement('div');
-                item.className = `p-4 rounded-2xl bg-white/5 hover:bg-white/10 border ${state.officeCode === office.code ? 'border-indigo-500 bg-indigo-950/40' : 'border-white/5'} cursor-pointer transition-all flex justify-between items-center shadow-md`;
-                item.innerHTML = `
-                    <span class="font-semibold text-white text-base">${office.name}</span>
-                    <span class="text-xs px-3 py-1 rounded-xl ${state.officeCode === office.code ? 'bg-indigo-500 text-white font-bold' : 'bg-white/10 text-slate-300'}">${state.officeCode === office.code ? '선택됨' : '선택'}</span>
-                `;
-                item.onclick = () => {
-                    state.officeCode = office.code;
-                    state.officeName = office.name;
-                    officeSelectedText.innerText = office.name;
-                    officeSelectedText.classList.remove('text-slate-400');
-                    officeSelectedText.classList.add('text-white', 'font-medium');
-                    closeOfficePicker();
-                };
-                officeListContainer.appendChild(item);
-            });
+/* ============================================================
+   7. TIMETABLE
+   ============================================================ */
+function getTimetableEndpoint(){
+    const kind=state.schoolKind || state.schoolData?.SCHUL_KND_SC_NM || '';
+    if(kind.includes('초등')) return 'elsTimetable';
+    if(kind.includes('중학')) return 'misTimetable';
+    if(kind.includes('고등')) return 'hisTimetable';
+    return null;
+}
+function setupTimetableControls(){
+    const grade=$('grade-select'), cls=$('class-select');
+    grade.innerHTML=''; cls.innerHTML='';
+    for(let i=1;i<=6;i++){ const o=document.createElement('option'); o.value=i; o.textContent=`${i}학년`; grade.appendChild(o); }
+    for(let i=1;i<=20;i++){ const o=document.createElement('option'); o.value=i; o.textContent=`${i}반`; cls.appendChild(o); }
+    // 마지막 사용값이 있으면 복원
+    grade.value=localStorage.getItem('neis_grade') || '1'; cls.value=localStorage.getItem('neis_class') || '1';
+    loadTimetable();
+}
+async function loadTimetable(){
+    if(!state.schoolCode) return;
+    const endpoint=getTimetableEndpoint();
+    if(!endpoint){ $('timetable-container').innerHTML='<div class="empty">이 학교의 시간표 API 종류를 판별하지 못했습니다.</div>'; return; }
+    const grade=$('grade-select').value, cls=$('class-select').value;
+    localStorage.setItem('neis_grade',grade); localStorage.setItem('neis_class',cls);
+    const today=todayDate(); const key=`${endpoint}|${ymd(today)}|${grade}|${cls}`;
+    if(state.timetableRequestKey===key && state.timetableRows.length) { renderTimetable(); return; }
+    state.timetableRequestKey=key;
+    setLoading($('timetable-container'),'오늘 시간표를 불러오는 중...');
+    try{
+        const params={
+            ATPT_OFCDC_SC_CODE:state.officeCode, SD_SCHUL_CODE:state.schoolCode,
+            ALL_TI_YMD:ymd(today), GRADE:grade, CLASS_NM:cls, pSize:'200'
+        };
+        const data=await neis(endpoint,params);
+        let rows=extractRows(data,endpoint);
+        // 일부 학교/급은 CLASS_NM 값이 숫자/문자열로 섞여 내려올 수 있어 느슨하게 한 번 더 필터링
+        rows=rows.filter(r=>String(r.GRADE||'')===String(grade) && String(r.CLASS_NM||'')===String(cls) || (!r.GRADE && !r.CLASS_NM));
+        state.timetableRows=rows;
+        renderTimetable();
+        setTimeout(syncScrollRail, 30);
+    }catch(err){
+        console.error(err); state.timetableRows=[];
+        $('timetable-container').innerHTML='<div class="empty">시간표를 가져오지 못했습니다. 학년/반을 바꾸거나 잠시 후 다시 시도해주세요.</div>';
+    }
+}
+function renderTimetable(){
+    const box=$('timetable-container');
+    if(!state.timetableRows.length){ box.innerHTML='<div class="empty">오늘 등록된 시간표가 없습니다.</div>'; return; }
+    const days=[1,2,3,4,5]; const labels=['월','화','수','목','금'];
+    const maxPeriod=Math.max(6,...state.timetableRows.map(r=>Number(r.PERIO)||0));
+    const lookup={};
+    state.timetableRows.forEach(r=>{
+        const d=Number(r.ALL_TI_YMD?.slice(-2)) || new Date().getDay();
+        const dayIndex=new Date(Number(r.ALL_TI_YMD?.slice(0,4)||todayDate().getFullYear()), Number(r.ALL_TI_YMD?.slice(4,6)||todayDate().getMonth()+1)-1, Number(r.ALL_TI_YMD?.slice(6,8)||todayDate().getDate())).getDay();
+        const period=Number(r.PERIO)||0;
+        const key=`${dayIndex}|${period}`; lookup[key]=r;
+    });
+    let html='<table class="timetable"><thead><tr><th></th>'+labels.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
+    for(let p=1;p<=maxPeriod;p++){
+        html+=`<tr><td class="period-cell">${p}교시</td>`;
+        for(let i=0;i<5;i++){
+            const r=lookup[`${days[i]}|${p}`];
+            html+=r ? `<td><div class="subject">${esc(r.ITRT_CNTNT || r.SUBJECT || r.ITRT_NM || '수업')}</div><div class="subject-room">${esc(r.CLRM_NM || r.CLASS_NM || '')}</div></td>` : '<td><span style="color:#555c65;font-size:10px">—</span></td>';
         }
-
-        function openOfficePicker() {
-            initOfficeList();
-            officeModal.classList.remove('hidden');
-            setTimeout(() => officeModal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeOfficePicker() {
-            officeModal.classList.add('opacity-0');
-            setTimeout(() => officeModal.classList.add('hidden'), 300);
-        }
-
-        // Wizard Navigation: Step 1 -> Step 2
-        function nextStep() {
-            if (!state.officeCode) {
-                showToast("소속 교육청을 선택해주세요.");
-                return;
-            }
-            state.step = 2;
-
-            step1El.classList.add('hidden');
-            step2El.classList.remove('hidden');
-            
-            indicator1.classList.remove('w-8', 'bg-indigo-400');
-            indicator1.classList.add('w-2', 'bg-white/20');
-            indicator2.classList.remove('w-2', 'bg-white/20');
-            indicator2.classList.add('w-8', 'bg-indigo-400');
-
-            schoolInput.focus();
-        }
-
-        // Wizard Navigation: Step 2 -> Step 1
-        function prevStep() {
-            state.step = 1;
-            step2El.classList.add('hidden');
-            step1El.classList.remove('hidden');
-
-            indicator2.classList.remove('w-8', 'bg-indigo-400');
-            indicator2.classList.add('w-2', 'bg-white/20');
-            indicator1.classList.remove('w-2', 'bg-white/20');
-            indicator1.classList.add('w-8', 'bg-indigo-400');
-        }
-
-        // School search event listener with debounce
-        let searchTimeout;
-        schoolInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            clearTimeout(searchTimeout);
-
-            if (query.length < 2) {
-                schoolResults.classList.add('hidden');
-                schoolResults.innerHTML = '';
-                disableSearchBtn();
-                return;
-            }
-
-            searchTimeout = setTimeout(() => {
-                fetchSchools(query);
-            }, 300);
-        });
-
-        // Fetch school list from NEIS API
-        async function fetchSchools(query) {
-            const apiKey = getApiKey();
-            const url = `https://open.neis.go.kr/hub/schoolInfo?KEY=${apiKey}&Type=json&pIndex=1&pSize=10&ATPT_OFCDC_SC_CODE=${state.officeCode}&SCHUL_NM=${encodeURIComponent(query)}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.schoolInfo && data.schoolInfo[1]) {
-                    const schools = data.schoolInfo[1].row;
-                    renderSchoolResults(schools);
-                } else {
-                    schoolResults.innerHTML = `<div class="p-4 rounded-xl bg-white/5 text-slate-400 text-sm text-center">검색 결과가 없습니다.</div>`;
-                    schoolResults.classList.remove('hidden');
-                    disableSearchBtn();
-                }
-            } catch (error) {
-                console.error("School fetch error:", error);
-                schoolResults.innerHTML = `<div class="p-4 rounded-xl bg-white/5 text-rose-400 text-sm text-center">학교 정보를 불러오는 중 오류가 발생했습니다.</div>`;
-                schoolResults.classList.remove('hidden');
-                disableSearchBtn();
-            }
-        }
-
-        // Render searchable school items
-        function renderSchoolResults(schools) {
-            schoolResults.innerHTML = '';
-            schools.forEach(school => {
-                const item = document.createElement('div');
-                item.className = 'p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition-all duration-200 flex justify-between items-center shadow-md';
-                item.innerHTML = `
-                    <div>
-                        <div class="font-semibold text-white text-sm">${school.SCHUL_NM}</div>
-                        <div class="text-xs text-slate-400">${school.ORG_RDNMA || school.LCTN_SC_NM}</div>
-                    </div>
-                    <span class="text-xs px-3 py-1 rounded-xl bg-indigo-500/20 text-indigo-300 font-medium">선택</span>
-                `;
-                item.onclick = () => {
-                    state.schoolCode = school.SD_SCHUL_CODE;
-                    state.schoolName = school.SCHUL_NM;
-                    schoolInput.value = school.SCHUL_NM;
-                    schoolResults.classList.add('hidden');
-                    enableSearchBtn();
-                };
-                schoolResults.appendChild(item);
-            });
-            schoolResults.classList.remove('hidden');
-        }
-
-        function enableSearchBtn() {
-            searchTriggerBtn.disabled = false;
-            searchTriggerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-
-        function disableSearchBtn() {
-            searchTriggerBtn.disabled = true;
-            searchTriggerBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
-
-        // Trigger search and fetch meal info
-        function triggerSearch() {
-            if (!state.schoolCode) return;
-
-            // Save info to localStorage for future visits
-            localStorage.setItem('neis_office_code', state.officeCode);
-            localStorage.setItem('neis_office_name', state.officeName);
-            localStorage.setItem('neis_school_code', state.schoolCode);
-            localStorage.setItem('neis_school_name', state.schoolName);
-
-            wizardContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
-            resultContainer.classList.remove('hidden');
-
-            document.getElementById('result-school-title').innerText = state.schoolName;
-            document.getElementById('selected-school-badge').innerText = `${state.officeName} · 급식 조회 정보`;
-
-            fetchMealData();
-        }
-
-        // Dedicated function to change school info from the header button
-        function changeSchoolInfo() {
-            // Clear local storage
-            localStorage.removeItem('neis_office_code');
-            localStorage.removeItem('neis_office_name');
-            localStorage.removeItem('neis_school_code');
-            localStorage.removeItem('neis_school_name');
-
-            // Reset state
-            state.schoolCode = '';
-            state.schoolName = '';
-            state.officeCode = '';
-            state.officeName = '';
-            officeSelectedText.innerText = '교육청을 선택하세요';
-            officeSelectedText.classList.remove('text-white', 'font-medium');
-            officeSelectedText.classList.add('text-slate-400');
-
-            schoolInput.value = '';
-            schoolResults.classList.add('hidden');
-            disableSearchBtn();
-
-            resultContainer.classList.add('hidden');
-            wizardContainer.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'hidden');
-            prevStep();
-        }
-
-        // Reset wizard
-        function resetWizard() {
-            changeSchoolInfo();
-        }
-
-        // Fetch Meal Service info from NEIS API
-        async function fetchMealData() {
-            const apiKey = getApiKey();
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            
-            const startYMD = `${year}${month}01`;
-            const endYMD = `${year}${month}31`;
-
-            const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${apiKey}&Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${state.officeCode}&SD_SCHUL_CODE=${state.schoolCode}&MLSV_FROM_YMD=${startYMD}&MLSV_TO_YMD=${endYMD}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.mealServiceDietInfo && data.mealServiceDietInfo[1]) {
-                    const mealRows = data.mealServiceDietInfo[1].row;
-                    processMealData(mealRows, `${year}${month}${day}`);
-                } else {
-                    renderWeeklyEmptyState(`${year}${month}${day}`);
-                }
-            } catch (error) {
-                console.error("Meal fetch error:", error);
-                renderNoMealData("급식 정보를 불러오는 중 네트워크 오류가 발생했습니다.");
-            }
-        }
-
-        // Process and display meal data with strict 7-day cards (filling missing dates)
-        function processMealData(rows, todayYMD) {
-            const todayFormatted = `${todayYMD.slice(0,4)}년 ${todayYMD.slice(4,6)}월 ${todayYMD.slice(6,8)}일`;
-            document.getElementById('today-date-str').innerText = todayFormatted;
-
-            // Find today's lunch (MMEAL_SC_CODE === '2' for lunch)
-            const todayMeal = rows.find(row => row.MLSV_YMD === todayYMD && row.MMEAL_SC_CODE === '2');
-            
-            const todayMenuContainer = document.getElementById('today-menu-content');
-            const todayCalBadge = document.getElementById('today-cal-badge');
-
-            if (todayMeal) {
-                state.todayMenuText = todayMeal.DDISH_NM.replace(/<br\/>/g, '\n').replace(/\([0-9\.]+\)/g, '');
-                state.todayCalInfo = todayMeal.CAL_INFO || '칼로리 정보 없음';
-
-                const menuItems = todayMeal.DDISH_NM.split('<br/>').map(item => item.replace(/\([0-9\.]+\)/g, '').trim()).filter(Boolean);
-                todayMenuContainer.innerHTML = `
-                    <div class="flex flex-wrap gap-2.5">
-                        ${menuItems.map(item => `
-                            <span class="px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-base md:text-lg font-medium transition-all shadow-sm">
-                                ✨ ${item}
-                            </span>
-                        `).join('')}
-                    </div>
-                `;
-                todayCalBadge.innerText = state.todayCalInfo;
-
-                fetchAiQuickInsight(state.todayMenuText);
-            } else {
-                state.todayMenuText = "오늘 등록된 중식 급식 정보가 없습니다.";
-                todayMenuContainer.innerHTML = `<span class="text-slate-400">오늘 등록된 중식 급식 정보가 없습니다.</span>`;
-                todayCalBadge.innerText = '정보 없음';
-                document.getElementById('ai-insight-text').innerText = '오늘 등록된 식단 정보가 없습니다.';
-            }
-
-            // Generate exactly 7 days starting from today (today + 6 upcoming days = 7 tabs)
-            const horizontalContainer = document.getElementById('weekly-horizontal-container');
-            horizontalContainer.innerHTML = '';
-
-            const now = new Date(parseInt(todayYMD.slice(0,4)), parseInt(todayYMD.slice(4,6)) - 1, parseInt(todayYMD.slice(6,8)));
-
-            for (let i = 0; i < 7; i++) {
-                const targetDate = new Date(now);
-                targetDate.setDate(now.getDate() + i);
-
-                const y = targetDate.getFullYear();
-                const m = String(targetDate.getMonth() + 1).padStart(2, '0');
-                const d = String(targetDate.getDate()).padStart(2, '0');
-                const ymdStr = `${y}${m}${d}`;
-                const dateDisplayStr = `${m}월 ${d}일`;
-                const isToday = (i === 0);
-
-                // Find meal for this specific date
-                const meal = rows.find(row => row.MLSV_YMD === ymdStr && row.MMEAL_SC_CODE === '2');
-
-                const card = document.createElement('div');
-                card.className = `snap-start shrink-0 w-[280px] md:w-[320px] glass-panel rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:border-indigo-500/50 hover:scale-[1.02] ${isToday ? 'border-indigo-500/80 bg-gradient-to-b from-indigo-950/50 to-indigo-900/20 shadow-xl shadow-indigo-500/10 ring-1 ring-indigo-500/30' : ''}`;
-
-                if (meal) {
-                    const menuList = meal.DDISH_NM.split('<br/>').map(item => item.replace(/\([0-9\.]+\)/g, '').trim()).filter(Boolean);
-                    card.innerHTML = `
-                        <div>
-                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-                                <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
-                                <span class="text-xs font-medium text-slate-400">${meal.CAL_INFO || ''}</span>
-                            </div>
-                            <div class="space-y-2 mb-6 min-h-[160px]">
-                                ${menuList.map(item => `<div class="text-sm text-slate-200 font-light flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></span>${item}</div>`).join('')}
-                            </div>
-                        </div>
-                        <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
-                            <span>중식 메뉴</span>
-                            <span class="text-indigo-400 font-medium">NEIS Verified</span>
-                        </div>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <div>
-                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-                                <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
-                                <span class="text-xs font-medium text-slate-400">-</span>
-                            </div>
-                            <div class="flex flex-col items-center justify-center text-center py-12 space-y-3 min-h-[160px]">
-                                <div class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 text-sm">🍽️</div>
-                                <p class="text-sm text-slate-400 font-light">오늘은 급식이 없습니다!</p>
-                            </div>
-                        </div>
-                        <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
-                            <span>중식 메뉴</span>
-                            <span class="text-slate-500">정보 없음</span>
-                        </div>
-                    `;
-                }
-                horizontalContainer.appendChild(card);
-            }
-        }
-
-        function renderWeeklyEmptyState(todayYMD) {
-            const todayFormatted = `${todayYMD.slice(0,4)}년 ${todayYMD.slice(4,6)}월 ${todayYMD.slice(6,8)}일`;
-            document.getElementById('today-date-str').innerText = todayFormatted;
-            document.getElementById('today-menu-content').innerHTML = `<span class="text-slate-400">오늘 등록된 중식 급식 정보가 없습니다.</span>`;
-            document.getElementById('today-cal-badge').innerText = '정보 없음';
-
-            const horizontalContainer = document.getElementById('weekly-horizontal-container');
-            horizontalContainer.innerHTML = '';
-            const now = new Date(parseInt(todayYMD.slice(0,4)), parseInt(todayYMD.slice(4,6)) - 1, parseInt(todayYMD.slice(6,8)));
-
-            for (let i = 0; i < 7; i++) {
-                const targetDate = new Date(now);
-                targetDate.setDate(now.getDate() + i);
-                const m = String(targetDate.getMonth() + 1).padStart(2, '0');
-                const d = String(targetDate.getDate()).padStart(2, '0');
-                const dateDisplayStr = `${m}월 ${d}일`;
-                const isToday = (i === 0);
-
-                const card = document.createElement('div');
-                card.className = `snap-start shrink-0 w-[280px] md:w-[320px] glass-panel rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 ${isToday ? 'border-indigo-500/80 bg-gradient-to-b from-indigo-950/50 to-indigo-900/20 shadow-xl' : ''}`;
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-                            <span class="text-sm font-bold ${isToday ? 'text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full' : 'text-white'}">${dateDisplayStr} ${isToday ? '(오늘)' : ''}</span>
-                            <span class="text-xs font-medium text-slate-400">-</span>
-                        </div>
-                        <div class="flex flex-col items-center justify-center text-center py-12 space-y-3 min-h-[160px]">
-                            <div class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 text-sm">🍽️</div>
-                            <p class="text-sm text-slate-400 font-light">오늘은 급식이 없습니다!</p>
-                        </div>
-                    </div>
-                    <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
-                        <span>중식 메뉴</span>
-                        <span class="text-slate-500">정보 없음</span>
-                    </div>
-                `;
-                horizontalContainer.appendChild(card);
-            }
-        }
-
-        // Scroll horizontal weekly container smoothly
-        function scrollWeekly(offset) {
-            const container = document.getElementById('weekly-horizontal-container');
-            container.scrollBy({ left: offset, behavior: 'smooth' });
-        }
-
-        function renderNoMealData(msg = "이번 달 등록된 급식 정보가 없습니다.") {
-            document.getElementById('today-menu-content').innerHTML = `<span class="text-slate-400">${msg}</span>`;
-            document.getElementById('weekly-horizontal-container').innerHTML = `<div class="w-full text-center py-12 text-slate-400 glass-panel rounded-3xl">${msg}</div>`;
-        }
-
-        // --- GEMINI API INTEGRATION WITH EMBEDDED FALLBACK KEY & STANDALONE FETCH ---
-        const _aiKeyParts = ['AQ.Ab8RN6IrNCPIDKCsw2wUtDIUUqU3hcUFdqHfzhvusMma6He', '-aQ'];
-        function getAiKey() {
-            return _aiKeyParts.join('');
-        }
-
-        async function callGeminiApi(systemPrompt, userPrompt) {
-            const apiKey = getAiKey();
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userPrompt }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                }
-            };
-
-            let delay = 1000;
-            for (let attempt = 0; attempt < 3; attempt++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    const candidate = result.candidates?.[0];
-                    if (candidate && candidate.content?.parts?.[0]?.text) {
-                        return candidate.content.parts[0].text;
-                    }
-                } catch (err) {
-                    // Silent retry
-                }
-                await new Promise(res => setTimeout(res, delay));
-                delay *= 2;
-            }
-            return "마법의 수정구슬에 안개가 끼어 답변을 불러오지 못했노라...";
-        }
-
-        async function fetchAiQuickInsight(menuText) {
-            const insightText = document.getElementById('ai-insight-text');
-            insightText.innerText = "🧙‍♂️ 대마법사가 오늘의 메뉴에서 신비로운 영양의 기운을 읽는 중...";
-
-            const systemPrompt = "너는 지혜롭고 고결하며 약간은 연륜 있는 판타지 세계관의 대마법사이다. 학생들에게 오늘의 급식 메뉴를 보며 마법사의 말투('~하노라', '~일지니', '오오', '마나여' 등)로 친근하고 유익한 영양 조언이나 예언을 40자 내외로 짧고 멋지게 내려주어라.";
-            const userPrompt = `오늘의 메뉴:\n${menuText}`;
-
-            const reply = await callGeminiApi(systemPrompt, userPrompt);
-            insightText.innerText = reply;
-        }
-
-        async function openAiModal() {
-            const modal = document.getElementById('ai-modal');
-            const content = document.getElementById('ai-modal-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-
-            if (!state.todayMenuText) {
-                content.innerHTML = `<div class="p-4 text-center text-slate-400">수정구슬에 오늘의 식단이 비치지 않는구나...</div>`;
-                return;
-            }
-
-            content.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 space-y-4 text-slate-400">
-                    <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p>🧙‍♂️ 대마법사가 오늘의 식단을 연금술적으로 해독하고 있느니라...</p>
-                </div>
-            `;
-
-            const systemPrompt = "너는 지혜롭고 위대한 대마법사이다. 사용자가 제공한 학교 급식 메뉴와 칼로리 정보를 바탕으로 1) 연금술적 영양 밸런스 평가, 2) 하이라이트 재료가 주는 마력(영양소), 3) 하루를 무사히 버티기 위한 마법의 섭취 조언을 마법사 말투('~하노라', '~재앙을 막아줄지니', '오오')를 사용하여 신비롭고 친근한 마크다운 형식으로 작성해 주어라.";
-            const userPrompt = `학교명: ${state.schoolName}\n칼로리: ${state.todayCalInfo}\n메뉴:\n${state.todayMenuText}`;
-
-            const report = await callGeminiApi(systemPrompt, userPrompt);
-            
-            content.innerHTML = `
-                <div class="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4 shadow-xl">
-                    <div class="text-white font-bold text-base flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ${state.schoolName}의 마법 영양 비전 리포트
-                    </div>
-                    <div class="text-slate-300 space-y-2 whitespace-pre-line font-light leading-relaxed">${report}</div>
-                </div>
-            `;
-        }
-
-        function closeAiModal() {
-            const modal = document.getElementById('ai-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        async function sendAiChat() {
-            const input = document.getElementById('ai-chat-input');
-            const content = document.getElementById('ai-modal-content');
-            const question = input.value.trim();
-            if (!question) return;
-
-            input.value = '';
-            
-            const userBubble = document.createElement('div');
-            userBubble.className = 'p-4 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-100 ml-8 text-right shadow-md';
-            userBubble.innerText = question;
-            content.appendChild(userBubble);
-            content.scrollTop = content.scrollHeight;
-
-            const loadingBubble = document.createElement('div');
-            loadingBubble.className = 'p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 mr-8 flex items-center gap-2 shadow-md';
-            loadingBubble.innerHTML = `<div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div> 🧙‍♂️ 대마법사가 고대의 도서관에서 답을 찾는 중...`;
-            content.appendChild(loadingBubble);
-            content.scrollTop = content.scrollHeight;
-
-            const systemPrompt = `너는 지혜롭고 위대한 대마법사이다. 오늘의 급식 메뉴(${state.todayMenuText})에 대해 어린 모험가(학생)가 묻는 질문에 마법사 말투('~하노라', '~구만', '오오')로 유쾌하고 지혜롭게 답변해주어라.`;
-            const userPrompt = `모험가의 질문: ${question}`;
-
-            const reply = await callGeminiApi(systemPrompt, userPrompt);
-            loadingBubble.className = 'p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-200 mr-8 leading-relaxed font-light shadow-md';
-            loadingBubble.innerText = reply;
-            content.scrollTop = content.scrollHeight;
-        }
-
-        // Custom toast notification replacing alert()
-        function showToast(message) {
-            const existingToast = document.getElementById('custom-toast');
-            if (existingToast) existingToast.remove();
-
-            const toast = document.createElement('div');
-            toast.id = 'custom-toast';
-            toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 z-50 glass-panel px-6 py-3 rounded-2xl text-sm font-medium text-white shadow-2xl border-white/20 animate-bounce';
-            toast.innerText = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
-    </script>
+        html+='</tr>';
+    }
+    html+='</tbody></table>'; box.innerHTML=html;
+}
+
+function openScheduleModal(){
+    const modal=$('schedule-modal'); const content=$('schedule-modal-content');
+    $('schedule-modal-sub').textContent=fmtMonth(state.scheduleMonth)+' · ' + state.scheduleRows.length + '개 일정';
+    if(!state.scheduleRows.length){ content.innerHTML='<div class="empty">등록된 학사일정이 없습니다.</div>'; }
+    else { content.innerHTML=state.scheduleRows.map(r=>{ const d=fromYmd(r.AA_YMD); return `<div class="event" style="margin-bottom:7px"><div class="event-date ${r.AA_YMD===ymd(todayDate())?'today-event':''}">${d.getMonth()+1}/${d.getDate()}<br>${weekday(d)}</div><div><div class="event-title">${esc(r.EVENT_NM || '일정')}</div>${r.EVENT_CNTNT?`<div class="event-desc" style="white-space:normal;line-height:1.45">${esc(cleanHtmlText(r.EVENT_CNTNT))}</div>`:''}</div></div>`; }).join(''); }
+    modal.classList.remove('hidden');
+}
+function closeScheduleModal(){ $('schedule-modal').classList.add('hidden'); }
+
+/* ============================================================
+   8. AI
+   ============================================================ */
+async function callGemini(systemPrompt,userPrompt){
+    if(!GEMINI_API_KEY){ return '마법의 수정구슬에 안개가 끼어 있노라...'; }
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+    const payload={contents:[{parts:[{text:userPrompt}]}],systemInstruction:{parts:[{text:systemPrompt}]}};
+    let wait=700;
+    for(let i=0;i<3;i++){
+        try{
+            const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+            const data=await response.json();
+            const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if(text) return text;
+        }catch(e){ console.warn('Gemini retry',e); }
+        await new Promise(r=>setTimeout(r,wait)); wait*=2;
+    }
+    return '수정구슬이 잠시 흐려졌노라. 조금 뒤 다시 시도해보거라.';
+}
+async function fetchAiQuickInsight(menuText){
+    if(!menuText){ $('ai-insight-text').textContent='오늘은 등록된 중식이 없구나. 대마법사도 빈 식판 앞에서는 침묵하노라.'; return; }
+    $('ai-insight-text').textContent='대마법사가 오늘의 식단을 살펴보는 중이니라...';
+    const system='너는 지혜로운 판타지 세계의 대마법사다. 학생의 급식 메뉴를 보고 과장된 의학적 판단 없이, 재미있고 유익한 한 줄 조언을 55자 이내로 말하라. 말투는 자연스러운 마법사 말투를 유지하라.';
+    $('ai-insight-text').textContent=await callGemini(system,`오늘의 메뉴: ${menuText}\n칼로리: ${state.todayCalInfo}`);
+}
+async function openAiModal(){
+    $('ai-modal').classList.remove('hidden');
+    const content=$('ai-modal-content');
+    if(!state.todayMenuText){ content.innerHTML='<div class="empty">오늘의 식단이 없어 분석할 재료가 없구나.</div>'; return; }
+    content.innerHTML='<div class="loading">대마법사가 식단의 기록을 읽는 중...</div>';
+    const system='너는 지혜롭고 약간 괴짜인 판타지 세계의 대마법사다. 급식 메뉴를 바탕으로 재미있는 식사 해석을 해라. 1) 오늘 메뉴의 인상 2) 눈여겨볼 음식 3) 학생에게 줄 한 가지 팁을 작성하라. 실제 영양소 수치를 모르는 경우 추정하지 말고 메뉴 이름 수준에서만 이야기하라. 마법사 말투를 사용하되 읽기 쉽게 써라.';
+    const report=await callGemini(system,`학교: ${state.schoolName}\n오늘 메뉴: ${state.todayMenuText}\n열량: ${state.todayCalInfo}`);
+    content.innerHTML=`<div class="ai-report">${esc(report)}</div><div id="chat-log" class="chat-log"></div>`;
+}
+function closeAiModal(){ $('ai-modal').classList.add('hidden'); }
+async function sendAiChat(){
+    const input=$('ai-chat-input'); const q=input.value.trim(); if(!q) return;
+    const log=$('chat-log');
+    if(!log){ await openAiModal(); }
+    const target=$('chat-log');
+    const user=document.createElement('div'); user.className='chat-user'; user.textContent=q; target.appendChild(user); input.value='';
+    const ai=document.createElement('div'); ai.className='chat-ai'; ai.textContent='대마법사가 고대의 식단서를 뒤지는 중이니라...'; target.appendChild(ai); target.scrollIntoView({block:'end'});
+    const system=`너는 판타지 세계의 대마법사다. 오늘 급식(${state.todayMenuText})에 대해 학생의 질문에 친근하게 답하라. 메뉴에 없는 영양정보나 사실을 지어내지 말고, 모르는 것은 모른다고 말하라. 말투는 마법사답게 하되 과하지 않게.`;
+    ai.textContent=await callGemini(system,`학생의 질문: ${q}`);
+}
+
+/* ============================================================
+   9. CUSTOM SCROLL VIEW
+   ============================================================ */
+function scrollToMain(id){
+    const scroller=$('main-scroll'), target=$(id);
+    if(!scroller || !target) return;
+    const scrollerRect=scroller.getBoundingClientRect();
+    const targetRect=target.getBoundingClientRect();
+    const top=Math.max(0, scroller.scrollTop + targetRect.top - scrollerRect.top - 18);
+    scroller.scrollTo({top,behavior:'smooth'});
+}
+function syncScrollRail(){
+    const scroller=$('main-scroll'), rail=$('dashboard-scroll-rail'), thumb=$('dashboard-scroll-thumb');
+    if(!scroller || !rail || !thumb) return;
+    const max=scroller.scrollHeight-scroller.clientHeight;
+    if(max<=4){ rail.classList.remove('visible'); return; }
+    rail.classList.add('visible');
+    const trackH=rail.clientHeight;
+    const thumbH=Math.max(46, Math.round(trackH*(scroller.clientHeight/scroller.scrollHeight)));
+    const top=Math.round((trackH-thumbH)*(scroller.scrollTop/max));
+    thumb.style.height=thumbH+'px'; thumb.style.top=top+'px';
+}
+function setupCustomScroll(){
+    const scroller=$('main-scroll');
+    if(!scroller) return;
+    scroller.addEventListener('scroll',syncScrollRail,{passive:true});
+    window.addEventListener('resize',syncScrollRail);
+    if(window.ResizeObserver) new ResizeObserver(syncScrollRail).observe(scroller);
+    setTimeout(syncScrollRail,50);
+}
+
+/* ============================================================
+   10. MODALS / UI
+   ============================================================ */
+function backdropClose(event,id){ if(event.target.id===id){ if(id==='office-modal') closeOfficePicker(); else if(id==='schedule-modal') closeScheduleModal(); else closeAiModal(); } }
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeOfficePicker();closeScheduleModal();closeAiModal();} });
+window.addEventListener('keydown',e=>{
+  const active=document.activeElement;
+  if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(active?.tagName)) return;
+  const scroller=$('main-scroll'); if(!scroller || $('result-container')?.classList.contains('hidden')) return;
+  if(e.key==='PageDown'){e.preventDefault();scroller.scrollBy({top:Math.max(300,scroller.clientHeight*.78),behavior:'smooth'});}
+  if(e.key==='PageUp'){e.preventDefault();scroller.scrollBy({top:-Math.max(300,scroller.clientHeight*.78),behavior:'smooth'});}
+});
+</script>
+<script>
+(() => {
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){
+    document.querySelectorAll('.card,.wizard,.small-btn,.icon-btn').forEach(el=>{
+      el.addEventListener('pointermove',e=>{ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5; const y=(e.clientY-r.top)/r.height-.5; if(el.classList.contains('card')||el.classList.contains('wizard')) el.style.transform=`perspective(900px) rotateX(${(-y*1.5).toFixed(2)}deg) rotateY(${(x*1.8).toFixed(2)}deg)`; });
+      el.addEventListener('pointerleave',()=>{el.style.transform='';});
+    });
+  }
+  document.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; b.animate([{transform:'scale(.96)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'}); });
+})();
+</script>
 </body>
 </html>
